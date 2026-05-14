@@ -1,0 +1,17 @@
+# ConfigMap for worker environment variables.
+# Override values per region or cluster (e.g. kubectl create configmap worker-config --from-literal=WORKER_REGION=eu ...)
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: worker-config
+  labels:
+    app: agent-cloud-worker
+data:
+  # Geographic region for this worker pool (us, eu, asia). Used for regional task routing.
+  WORKER_REGION: "us"
+  # Comma-separated capabilities (e.g. python,gpu,browser). Scheduler uses this for task assignment.
+  WORKER_CAPABILITIES: "python"
+  # URL of the central scheduler (GET /scheduler/task). Workers request tasks from here when set.
+  SCHEDULER_URL: "http://agent-cloud-api.default.svc.cluster.local/scheduler/task"
+  # Redis URL for task queue (optional; workers use Redis when REDIS_URL is set).
+  REDIS_URL: "redis://redis.default.svc.cluster.local:6379/0"

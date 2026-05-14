@@ -1,0 +1,1949 @@
+{
+  "format": "agent-cloud.openapi_route_bundle.v1",
+  "app": "agent_cloud.app.api.main:app",
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/docs",
+      "name": "swagger_ui_html",
+      "tags": "",
+      "deps": ""
+    },
+    {
+      "method": "GET",
+      "path": "/docs/oauth2-redirect",
+      "name": "swagger_ui_redirect",
+      "tags": "",
+      "deps": ""
+    },
+    {
+      "method": "GET",
+      "path": "/health",
+      "name": "<lambda>",
+      "tags": "",
+      "deps": "<lambda>"
+    },
+    {
+      "method": "GET",
+      "path": "/openapi.json",
+      "name": "openapi",
+      "tags": "",
+      "deps": ""
+    },
+    {
+      "method": "GET",
+      "path": "/redoc",
+      "name": "redoc_html",
+      "tags": "",
+      "deps": ""
+    },
+    {
+      "method": "POST",
+      "path": "/v1/agents/publish",
+      "name": "agents_publish",
+      "tags": "agents,marketplace",
+      "deps": "agents_publish;get_current_user_optional"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/agents/run",
+      "name": "agents_run",
+      "tags": "agents,marketplace",
+      "deps": "agents_run;require_project_context;get_current_user;require_project_id"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/agents/store",
+      "name": "agents_store",
+      "tags": "agents,marketplace",
+      "deps": "agents_store"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/agents/{name}/latest",
+      "name": "agents_latest",
+      "tags": "agents,marketplace",
+      "deps": "agents_latest"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/auth/login",
+      "name": "login",
+      "tags": "auth,auth",
+      "deps": "login"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/auth/me",
+      "name": "me",
+      "tags": "auth,auth",
+      "deps": "me;get_current_user"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/auth/register",
+      "name": "register",
+      "tags": "auth,auth",
+      "deps": "register"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/system/version",
+      "name": "version",
+      "tags": "system",
+      "deps": "version"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/tasks/enqueue",
+      "name": "enqueue_task",
+      "tags": "tasks",
+      "deps": "enqueue_task;get_task_service"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/tasks/{task_id}",
+      "name": "get_task_stub",
+      "tags": "tasks",
+      "deps": "get_task_stub"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/workflows/analytics/aggregate",
+      "name": "get_workflow_aggregate_analytics",
+      "tags": "workflows,workflows",
+      "deps": "get_workflow_aggregate_analytics;require_project_context;get_current_user;require_project_id"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/workflows/analytics/run/{workflow_id}",
+      "name": "get_workflow_run_analytics",
+      "tags": "workflows,workflows",
+      "deps": "get_workflow_run_analytics;require_project_context;get_current_user;require_project_id"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/workflows/demo",
+      "name": "post_demo_workflow",
+      "tags": "workflows,workflows",
+      "deps": "post_demo_workflow;require_project_can_run;require_project_context;get_current_user;require_project_id"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/workflows/optimization/apply",
+      "name": "post_workflow_optimization_apply",
+      "tags": "workflows,workflows",
+      "deps": "post_workflow_optimization_apply;require_project_context;get_current_user;require_project_id"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/workflows/optimization/recommendations",
+      "name": "get_workflow_recommendations",
+      "tags": "workflows,workflows",
+      "deps": "get_workflow_recommendations;require_project_context;get_current_user;require_project_id"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/workflows/optimization/slow-nodes",
+      "name": "get_workflow_slow_nodes",
+      "tags": "workflows,workflows",
+      "deps": "get_workflow_slow_nodes;require_project_context;get_current_user;require_project_id"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/workflows/optimization/summary",
+      "name": "get_workflow_optimization_summary",
+      "tags": "workflows,workflows",
+      "deps": "get_workflow_optimization_summary;require_project_context;get_current_user;require_project_id"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/workflows/{task_id}",
+      "name": "get_workflow",
+      "tags": "workflows,workflows",
+      "deps": "get_workflow;require_project_context;get_current_user;require_project_id"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/workflows/{workflow_id}/resume",
+      "name": "post_workflow_resume",
+      "tags": "workflows,workflows",
+      "deps": "post_workflow_resume;require_project_context;get_current_user;require_project_id"
+    }
+  ],
+  "openapi": {
+    "openapi": "3.1.0",
+    "info": {
+      "title": "Agent Cloud",
+      "version": "2.0.0"
+    },
+    "paths": {
+      "/v1/auth/register": {
+        "post": {
+          "tags": [
+            "auth",
+            "auth"
+          ],
+          "summary": "Register",
+          "operationId": "register_v1_auth_register_post",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegisterRequest"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/RegisterResponse"
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/v1/auth/login": {
+        "post": {
+          "tags": [
+            "auth",
+            "auth"
+          ],
+          "summary": "Login",
+          "operationId": "login_v1_auth_login_post",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginRequest"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/LoginResponse"
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/v1/auth/me": {
+        "get": {
+          "tags": [
+            "auth",
+            "auth"
+          ],
+          "summary": "Me",
+          "operationId": "me_v1_auth_me_get",
+          "parameters": [
+            {
+              "name": "Authorization",
+              "in": "header",
+              "required": false,
+              "schema": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Authorization"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/MeResponse"
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/v1/tasks/enqueue": {
+        "post": {
+          "tags": [
+            "tasks"
+          ],
+          "summary": "Enqueue Task",
+          "operationId": "enqueue_task_v1_tasks_enqueue_post",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskEnqueueRequest"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "202": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "additionalProperties": {
+                      "type": "string"
+                    },
+                    "type": "object",
+                    "title": "Response Enqueue Task V1 Tasks Enqueue Post"
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/v1/tasks/{task_id}": {
+        "get": {
+          "tags": [
+            "tasks"
+          ],
+          "summary": "Get Task Stub",
+          "description": "Placeholder \u2014 wire `TaskRepository.get` when exposing reads via v1.",
+          "operationId": "get_task_stub_v1_tasks__task_id__get",
+          "parameters": [
+            {
+              "name": "task_id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "format": "uuid",
+                "title": "Task Id"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "additionalProperties": true,
+                    "title": "Response Get Task Stub V1 Tasks  Task Id  Get"
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/v1/workflows/{workflow_id}/resume": {
+        "post": {
+          "tags": [
+            "workflows",
+            "workflows"
+          ],
+          "summary": "Post Workflow Resume",
+          "description": "Resume a workflow after crash/restart. Enqueues nodes that are pending or failed\nand whose dependencies are completed. Requires project context.",
+          "operationId": "post_workflow_resume_v1_workflows__workflow_id__resume_post",
+          "parameters": [
+            {
+              "name": "workflow_id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "format": "uuid",
+                "title": "Workflow Id"
+              }
+            },
+            {
+              "name": "project_id",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Project UUID",
+                "title": "Project Id"
+              },
+              "description": "Project UUID"
+            },
+            {
+              "name": "Authorization",
+              "in": "header",
+              "required": false,
+              "schema": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Authorization"
+              }
+            },
+            {
+              "name": "X-Project-ID",
+              "in": "header",
+              "required": false,
+              "schema": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "X-Project-Id"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/WorkflowResumeResponse"
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/v1/workflows/demo": {
+        "post": {
+          "tags": [
+            "workflows",
+            "workflows"
+          ],
+          "summary": "Post Demo Workflow",
+          "description": "Create and enqueue a demo workflow for the current project.\n\nReturns the root task_id so the frontend can poll /workflows/{task_id}\nand /tasks/{task_id}/stream for logs/output.",
+          "operationId": "post_demo_workflow_v1_workflows_demo_post",
+          "parameters": [
+            {
+              "name": "project_id",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Project UUID",
+                "title": "Project Id"
+              },
+              "description": "Project UUID"
+            },
+            {
+              "name": "Authorization",
+              "in": "header",
+              "required": false,
+              "schema": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Authorization"
+              }
+            },
+            {
+              "name": "X-Project-ID",
+              "in": "header",
+              "required": false,
+              "schema": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "X-Project-Id"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {}
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/v1/workflows/{task_id}": {
+        "get": {
+          "tags": [
+            "workflows",
+            "workflows"
+          ],
+          "summary": "Get Workflow",
+          "description": "Return workflow observability for the given task_id.\nRequires Authorization and X-Project-ID (or project_id query).\nReturns 403 if task does not belong to the project.",
+          "operationId": "get_workflow_v1_workflows__task_id__get",
+          "parameters": [
+            {
+              "name": "task_id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "format": "uuid",
+                "title": "Task Id"
+              }
+            },
+            {
+              "name": "project_id",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Project UUID",
+                "title": "Project Id"
+              },
+              "description": "Project UUID"
+            },
+            {
+              "name": "Authorization",
+              "in": "header",
+              "required": false,
+              "schema": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Authorization"
+              }
+            },
+            {
+              "name": "X-Project-ID",
+              "in": "header",
+              "required": false,
+              "schema": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "X-Project-Id"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {}
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/v1/workflows/analytics/run/{workflow_id}": {
+        "get": {
+          "tags": [
+            "workflows",
+            "workflows"
+          ],
+          "summary": "Get Workflow Run Analytics",
+          "description": "Return metrics for a single workflow run: average_runtime_ms, failure_rate, resource_usage, node_metrics.",
+          "operationId": "get_workflow_run_analytics_v1_workflows_analytics_run__workflow_id__get",
+          "parameters": [
+            {
+              "name": "workflow_id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "format": "uuid",
+                "title": "Workflow Id"
+              }
+            },
+            {
+              "name": "project_id",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Project UUID",
+                "title": "Project Id"
+              },
+              "description": "Project UUID"
+            },
+            {
+              "name": "Authorization",
+              "in": "header",
+              "required": false,
+              "schema": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Authorization"
+              }
+            },
+            {
+              "name": "X-Project-ID",
+              "in": "header",
+              "required": false,
+              "schema": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "X-Project-Id"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {}
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/v1/workflows/analytics/aggregate": {
+        "get": {
+          "tags": [
+            "workflows",
+            "workflows"
+          ],
+          "summary": "Get Workflow Aggregate Analytics",
+          "description": "Aggregate workflow metrics over a time window; optional filter by template_id. Requires project context.",
+          "operationId": "get_workflow_aggregate_analytics_v1_workflows_analytics_aggregate_get",
+          "parameters": [
+            {
+              "name": "window_days",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "type": "integer",
+                "maximum": 365,
+                "minimum": 1,
+                "default": 30,
+                "title": "Window Days"
+              }
+            },
+            {
+              "name": "template_id",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Template Id"
+              }
+            },
+            {
+              "name": "project_id",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Project UUID",
+                "title": "Project Id"
+              },
+              "description": "Project UUID"
+            },
+            {
+              "name": "Authorization",
+              "in": "header",
+              "required": false,
+              "schema": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Authorization"
+              }
+            },
+            {
+              "name": "X-Project-ID",
+              "in": "header",
+              "required": false,
+              "schema": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "X-Project-Id"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {}
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/v1/workflows/optimization/slow-nodes": {
+        "get": {
+          "tags": [
+            "workflows",
+            "workflows"
+          ],
+          "summary": "Get Workflow Slow Nodes",
+          "description": "Identify slowest workflow nodes (by agent) for optimization. Requires project context.",
+          "operationId": "get_workflow_slow_nodes_v1_workflows_optimization_slow_nodes_get",
+          "parameters": [
+            {
+              "name": "window_days",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "type": "integer",
+                "maximum": 365,
+                "minimum": 1,
+                "default": 30,
+                "title": "Window Days"
+              }
+            },
+            {
+              "name": "min_runs",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "type": "integer",
+                "minimum": 1,
+                "default": 3,
+                "title": "Min Runs"
+              }
+            },
+            {
+              "name": "top_n",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "type": "integer",
+                "maximum": 50,
+                "minimum": 1,
+                "default": 10,
+                "title": "Top N"
+              }
+            },
+            {
+              "name": "project_id",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Project UUID",
+                "title": "Project Id"
+              },
+              "description": "Project UUID"
+            },
+            {
+              "name": "Authorization",
+              "in": "header",
+              "required": false,
+              "schema": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Authorization"
+              }
+            },
+            {
+              "name": "X-Project-ID",
+              "in": "header",
+              "required": false,
+              "schema": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "X-Project-Id"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {}
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/v1/workflows/optimization/recommendations": {
+        "get": {
+          "tags": [
+            "workflows",
+            "workflows"
+          ],
+          "summary": "Get Workflow Recommendations",
+          "description": "Suggest improvements: parallelize nodes, change agent order, increase worker resources. Requires project context.",
+          "operationId": "get_workflow_recommendations_v1_workflows_optimization_recommendations_get",
+          "parameters": [
+            {
+              "name": "template_id",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Template Id"
+              }
+            },
+            {
+              "name": "workflow_id",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Workflow Id"
+              }
+            },
+            {
+              "name": "window_days",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "type": "integer",
+                "maximum": 365,
+                "minimum": 1,
+                "default": 30,
+                "title": "Window Days"
+              }
+            },
+            {
+              "name": "project_id",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Project UUID",
+                "title": "Project Id"
+              },
+              "description": "Project UUID"
+            },
+            {
+              "name": "Authorization",
+              "in": "header",
+              "required": false,
+              "schema": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Authorization"
+              }
+            },
+            {
+              "name": "X-Project-ID",
+              "in": "header",
+              "required": false,
+              "schema": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "X-Project-Id"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {}
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/v1/workflows/optimization/summary": {
+        "get": {
+          "tags": [
+            "workflows",
+            "workflows"
+          ],
+          "summary": "Get Workflow Optimization Summary",
+          "description": "Return slow nodes, recommendations, and aggregate metrics for dashboards. Requires project context.",
+          "operationId": "get_workflow_optimization_summary_v1_workflows_optimization_summary_get",
+          "parameters": [
+            {
+              "name": "template_id",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Template Id"
+              }
+            },
+            {
+              "name": "window_days",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "type": "integer",
+                "maximum": 365,
+                "minimum": 1,
+                "default": 30,
+                "title": "Window Days"
+              }
+            },
+            {
+              "name": "project_id",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Project UUID",
+                "title": "Project Id"
+              },
+              "description": "Project UUID"
+            },
+            {
+              "name": "Authorization",
+              "in": "header",
+              "required": false,
+              "schema": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Authorization"
+              }
+            },
+            {
+              "name": "X-Project-ID",
+              "in": "header",
+              "required": false,
+              "schema": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "X-Project-Id"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {}
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/v1/workflows/optimization/apply": {
+        "post": {
+          "tags": [
+            "workflows",
+            "workflows"
+          ],
+          "summary": "Post Workflow Optimization Apply",
+          "description": "(Optional) Apply a recommendation to a template DAG. dry_run=True only reports what would change. Requires project context.",
+          "operationId": "post_workflow_optimization_apply_v1_workflows_optimization_apply_post",
+          "parameters": [
+            {
+              "name": "template_id",
+              "in": "query",
+              "required": true,
+              "schema": {
+                "type": "integer",
+                "description": "Template to optimize",
+                "title": "Template Id"
+              },
+              "description": "Template to optimize"
+            },
+            {
+              "name": "recommendation_id",
+              "in": "query",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "description": "Recommendation id from /optimization/recommendations",
+                "title": "Recommendation Id"
+              },
+              "description": "Recommendation id from /optimization/recommendations"
+            },
+            {
+              "name": "dry_run",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "type": "boolean",
+                "description": "If true, only report what would change",
+                "default": true,
+                "title": "Dry Run"
+              },
+              "description": "If true, only report what would change"
+            },
+            {
+              "name": "project_id",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Project UUID",
+                "title": "Project Id"
+              },
+              "description": "Project UUID"
+            },
+            {
+              "name": "Authorization",
+              "in": "header",
+              "required": false,
+              "schema": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Authorization"
+              }
+            },
+            {
+              "name": "X-Project-ID",
+              "in": "header",
+              "required": false,
+              "schema": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "X-Project-Id"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {}
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/v1/agents/publish": {
+        "post": {
+          "tags": [
+            "agents",
+            "marketplace"
+          ],
+          "summary": "Agents Publish",
+          "description": "Register a new agent version in the marketplace.\n(name, version) must be unique; publishing the same name+version again returns 409.\nIf authenticated, the publishing user is set as the agent developer for revenue sharing.",
+          "operationId": "agents_publish_v1_agents_publish_post",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublishAgentRequest"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {}
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/v1/agents/store": {
+        "get": {
+          "tags": [
+            "agents",
+            "marketplace"
+          ],
+          "summary": "Agents Store",
+          "description": "Return all published agents in the marketplace for discovery.",
+          "operationId": "agents_store_v1_agents_store_get",
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {}
+                }
+              }
+            }
+          }
+        }
+      },
+      "/v1/agents/{name}/latest": {
+        "get": {
+          "tags": [
+            "agents",
+            "marketplace"
+          ],
+          "summary": "Agents Latest",
+          "description": "Return the latest version of the agent with the given name (by created_at).",
+          "operationId": "agents_latest_v1_agents__name__latest_get",
+          "parameters": [
+            {
+              "name": "name",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "title": "Name"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {}
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/v1/agents/run": {
+        "post": {
+          "tags": [
+            "agents",
+            "marketplace"
+          ],
+          "summary": "Agents Run",
+          "description": "Run a published agent: validate the agent exists, then enqueue the task for the project.\nRequires Authorization and X-Project-ID (or project_id query).",
+          "operationId": "agents_run_v1_agents_run_post",
+          "parameters": [
+            {
+              "name": "project_id",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Project UUID",
+                "title": "Project Id"
+              },
+              "description": "Project UUID"
+            },
+            {
+              "name": "Authorization",
+              "in": "header",
+              "required": false,
+              "schema": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Authorization"
+              }
+            },
+            {
+              "name": "X-Project-ID",
+              "in": "header",
+              "required": false,
+              "schema": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "X-Project-Id"
+              }
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunAgentRequest"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/MarketplaceAgentRunResponse"
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/v1/system/version": {
+        "get": {
+          "tags": [
+            "system"
+          ],
+          "summary": "Version",
+          "operationId": "version_v1_system_version_get",
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "additionalProperties": {
+                      "type": "string"
+                    },
+                    "type": "object",
+                    "title": "Response Version V1 System Version Get"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/health": {
+        "get": {
+          "summary": "<Lambda>",
+          "operationId": "_lambda__health_get",
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {}
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "components": {
+      "schemas": {
+        "HTTPValidationError": {
+          "properties": {
+            "detail": {
+              "items": {
+                "$ref": "#/components/schemas/ValidationError"
+              },
+              "type": "array",
+              "title": "Detail"
+            }
+          },
+          "type": "object",
+          "title": "HTTPValidationError"
+        },
+        "LoginRequest": {
+          "properties": {
+            "email": {
+              "type": "string",
+              "title": "Email"
+            },
+            "password": {
+              "type": "string",
+              "title": "Password"
+            }
+          },
+          "type": "object",
+          "required": [
+            "email",
+            "password"
+          ],
+          "title": "LoginRequest"
+        },
+        "LoginResponse": {
+          "properties": {
+            "access_token": {
+              "type": "string",
+              "title": "Access Token"
+            },
+            "token_type": {
+              "type": "string",
+              "title": "Token Type",
+              "default": "bearer"
+            }
+          },
+          "type": "object",
+          "required": [
+            "access_token"
+          ],
+          "title": "LoginResponse"
+        },
+        "MarketplaceAgentRunResponse": {
+          "properties": {
+            "status": {
+              "type": "string",
+              "title": "Status"
+            },
+            "agent": {
+              "type": "string",
+              "title": "Agent"
+            },
+            "task_id": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Task Id"
+            },
+            "project_id": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Project Id",
+              "description": "Project scope (projects.id)"
+            }
+          },
+          "type": "object",
+          "required": [
+            "status",
+            "agent",
+            "task_id",
+            "project_id"
+          ],
+          "title": "MarketplaceAgentRunResponse"
+        },
+        "MeResponse": {
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            },
+            "email": {
+              "type": "string",
+              "title": "Email"
+            },
+            "name": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Name"
+            }
+          },
+          "type": "object",
+          "required": [
+            "id",
+            "email"
+          ],
+          "title": "MeResponse"
+        },
+        "PublishAgentRequest": {
+          "properties": {
+            "name": {
+              "type": "string",
+              "title": "Name",
+              "description": "Agent name"
+            },
+            "description": {
+              "type": "string",
+              "title": "Description",
+              "description": "Agent description"
+            },
+            "version": {
+              "type": "string",
+              "title": "Version",
+              "description": "Semantic version, e.g. 1.0.0 or v1"
+            },
+            "capabilities": {
+              "items": {},
+              "type": "array",
+              "title": "Capabilities",
+              "description": "List of capability keywords"
+            },
+            "author": {
+              "type": "string",
+              "title": "Author",
+              "description": "Author or organization"
+            },
+            "price": {
+              "type": "number",
+              "minimum": 0.0,
+              "title": "Price",
+              "description": "Price (e.g. 0 for free)",
+              "default": 0.0
+            }
+          },
+          "type": "object",
+          "required": [
+            "name",
+            "description",
+            "version",
+            "capabilities",
+            "author"
+          ],
+          "title": "PublishAgentRequest",
+          "description": "Request body for POST /agents/publish."
+        },
+        "RegisterRequest": {
+          "properties": {
+            "name": {
+              "type": "string",
+              "title": "Name"
+            },
+            "email": {
+              "type": "string",
+              "title": "Email"
+            },
+            "password": {
+              "type": "string",
+              "title": "Password"
+            }
+          },
+          "type": "object",
+          "required": [
+            "name",
+            "email",
+            "password"
+          ],
+          "title": "RegisterRequest"
+        },
+        "RegisterResponse": {
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Id"
+            },
+            "email": {
+              "type": "string",
+              "title": "Email"
+            }
+          },
+          "type": "object",
+          "required": [
+            "id",
+            "email"
+          ],
+          "title": "RegisterResponse"
+        },
+        "RunAgentRequest": {
+          "properties": {
+            "agent": {
+              "type": "string",
+              "title": "Agent",
+              "description": "Published agent name (e.g. research_agent)"
+            },
+            "task": {
+              "type": "string",
+              "title": "Task",
+              "description": "Task to run (e.g. research AI startup market)"
+            },
+            "region": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Region",
+              "description": "Target region for routing (e.g. us, eu, asia)"
+            }
+          },
+          "type": "object",
+          "required": [
+            "agent",
+            "task"
+          ],
+          "title": "RunAgentRequest",
+          "description": "Request body for POST /agents/run."
+        },
+        "TaskEnqueueRequest": {
+          "properties": {
+            "payload": {
+              "additionalProperties": true,
+              "type": "object",
+              "title": "Payload"
+            },
+            "project_id": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Project Id"
+            },
+            "idempotency_key": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 512
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency Key"
+            },
+            "scheduled_at": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Scheduled At"
+            }
+          },
+          "type": "object",
+          "title": "TaskEnqueueRequest",
+          "description": "API / worker input for creating work."
+        },
+        "ValidationError": {
+          "properties": {
+            "loc": {
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ]
+              },
+              "type": "array",
+              "title": "Location"
+            },
+            "msg": {
+              "type": "string",
+              "title": "Message"
+            },
+            "type": {
+              "type": "string",
+              "title": "Error Type"
+            },
+            "input": {
+              "title": "Input"
+            },
+            "ctx": {
+              "type": "object",
+              "title": "Context"
+            }
+          },
+          "type": "object",
+          "required": [
+            "loc",
+            "msg",
+            "type"
+          ],
+          "title": "ValidationError"
+        },
+        "WorkflowResumeResponse": {
+          "properties": {
+            "status": {
+              "type": "string",
+              "title": "Status"
+            },
+            "workflow_id": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Workflow Id",
+              "description": "Root workflow task id (tasks.id); matches workflow_nodes.workflow_id"
+            },
+            "enqueued_task_ids": {
+              "items": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "type": "array",
+              "title": "Enqueued Task Ids",
+              "description": "Newly enqueued node task ids from resume"
+            }
+          },
+          "type": "object",
+          "required": [
+            "status",
+            "workflow_id"
+          ],
+          "title": "WorkflowResumeResponse"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,24 @@
+# Prometheus Operator / kube-prometheus-stack: scrape API pods.
+# Adjust namespaceSelector / labels to match your Prometheus installation.
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: agent-cloud-api
+  namespace: agent-cloud
+  labels:
+    app.kubernetes.io/name: agent-cloud
+    release: kube-prometheus-stack
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: agent-cloud
+      app.kubernetes.io/component: api
+  namespaceSelector:
+    matchNames:
+      - agent-cloud
+  endpoints:
+    - port: http
+      # Add an application /metrics endpoint first; until then, scrape redis_exporter / node_exporter
+      path: /metrics
+      interval: 30s
+      scrapeTimeout: 10s

@@ -1,0 +1,25 @@
+# Virtual env and caches
+venv
+.venv
+**/__pycache__
+__pycache__
+*.pyc
+**/*.pyc
+.pytest_cache
+.mypy_cache
+node_modules
+.next
+
+# Git and IDE
+.git
+.gitignore
+.cursor
+
+# Local env and secrets
+.env
+.env.local
+*.local
+
+# Docs and dev (optional; remove if you need them in image)
+# *.md
+# dashboard/README*.md

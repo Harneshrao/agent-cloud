@@ -1,0 +1,4 @@
+"""
+Competitor Intelligence Agent package.
+"""
+

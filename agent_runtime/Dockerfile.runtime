@@ -1,0 +1,13 @@
+# Agent Cloud container runtime: runs uploaded agents in isolation.
+# Build: docker build -f agent_runtime/Dockerfile.runtime -t agentcloud-runtime agent_runtime/
+FROM python:3.11-slim
+
+WORKDIR /agent
+
+# Runner script lives at /runner.py; /agent is mounted at run time
+COPY runner.py /runner.py
+
+# Optional: install PyYAML for agent.yaml parsing in runner
+RUN pip install --no-cache-dir pyyaml
+
+CMD ["python", "/runner.py"]

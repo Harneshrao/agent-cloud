@@ -1,0 +1,49 @@
+# Optional: scale worker deployment based on queue length (task backlog).
+# Uses platform GET /system/metrics (queue_length, workers_active) and scales
+# deployment/agent-cloud-worker so replicas ~ ceil(queue_length / TASKS_PER_WORKER).
+# Requires: PLATFORM_URL reachable from cluster; ServiceAccount with permission to
+# scale deployment/agent-cloud-worker (patch deployments).
+#
+# Install: set PLATFORM_URL env or update below, then kubectl apply -f queue-scaler-cronjob.yaml
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: worker-queue-scaler
+  labels:
+    app: agent-cloud-worker
+spec:
+  schedule: "*/2 * * * *"   # Every 2 minutes
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: scaler
+              image: curlimages/curl:latest
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -e
+                  JSON=$(curl -sf "${PLATFORM_URL}/system/metrics" || echo "{}")
+                  QUEUE=$(echo "$JSON" | grep -o '"queue_length":[0-9]*' | grep -o '[0-9]*' || echo "0")
+                  TARGET=$(( (QUEUE / TASKS_PER_WORKER) + 1 ))
+                  [ "$TARGET" -lt "$MIN_REPLICAS" ] && TARGET=$MIN_REPLICAS
+                  [ "$TARGET" -gt "$MAX_REPLICAS" ] && TARGET=$MAX_REPLICAS
+                  # Requires kubectl in cluster or use a job that calls platform scaling API
+                  echo "queue_length=$QUEUE target_replicas=$TARGET (run: kubectl scale deployment/agent-cloud-worker --replicas=$TARGET)"
+              env:
+                - name: PLATFORM_URL
+                  value: "http://agent-cloud-api.default.svc.cluster.local"
+                - name: MIN_REPLICAS
+                  value: "2"
+                - name: MAX_REPLICAS
+                  value: "20"
+                - name: TASKS_PER_WORKER
+                  value: "5"
+---
+# Alternative: use an image that includes kubectl and curl, and uncomment the scale command.
+# For production, implement a small scaler service that reads /system/metrics and patches
+# the deployment replica count via the Kubernetes API.

@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: agent-cloud-config
+  namespace: agent-cloud
+  labels:
+    app.kubernetes.io/name: agent-cloud
+data:
+  # Non-secret application configuration
+  PYTHONUNBUFFERED: "1"
+  PYTHONPATH: "/app"
+  LOG_LEVEL: "INFO"
+  SCHEDULER_TICK_SEC: "1"
+  # Optional: namespace Redis keys per env (staging:, prod:, …)
+  REDIS_KEY_NAMESPACE: ""
+  # Uvicorn worker count override (optional; Dockerfile default is 4)
+  UVICORN_WORKERS: "4"

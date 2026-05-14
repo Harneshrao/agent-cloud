@@ -1,0 +1,31 @@
+# syntax=docker/dockerfile:1
+# Production API — FastAPI via uvicorn (multi-worker).
+FROM python:3.11-slim
+
+WORKDIR /app
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONPATH=/app \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+RUN chmod +x /app/docker/entrypoint-api.sh \
+    && groupadd --system --gid 65532 app \
+    && useradd --system --uid 65532 --gid app --no-create-home --shell /usr/sbin/nologin app \
+    && chown -R app:app /app
+
+USER app
+
+EXPOSE 8000
+
+ENTRYPOINT ["/app/docker/entrypoint-api.sh"]

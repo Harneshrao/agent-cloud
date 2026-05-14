@@ -1,0 +1,56 @@
+# OPTIONAL: single-node Redis for non-production clusters only.
+# Production: use managed Redis (ElastiCache, Memorystore, Azure Cache) and point REDIS_URL in Secrets.
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: agent-cloud-redis
+  namespace: agent-cloud
+  labels:
+    app.kubernetes.io/name: redis
+spec:
+  selector:
+    app: agent-cloud-redis
+  ports:
+    - name: redis
+      port: 6379
+      targetPort: redis
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: agent-cloud-redis
+  namespace: agent-cloud
+  labels:
+    app: agent-cloud-redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: agent-cloud-redis
+  template:
+    metadata:
+      labels:
+        app: agent-cloud-redis
+    spec:
+      containers:
+        - name: redis
+          image: redis:7-alpine
+          args: ["redis-server", "--appendonly", "yes"]
+          ports:
+            - name: redis
+              containerPort: 6379
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "2Gi"
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: data
+          emptyDir: {}

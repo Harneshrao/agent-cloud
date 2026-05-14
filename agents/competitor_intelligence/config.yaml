@@ -1,0 +1,16 @@
+name: "Competitor Intelligence Agent"
+description: "Monitors competitor websites and pricing changes."
+version: "1.0.0"
+author: "Agent Cloud"
+pricing: "free"
+tags:
+  - "monitoring"
+  - "competitive-intel"
+  - "web"
+runtime: "v2"
+default_schedule: "0 */6 * * *" # every 6 hours
+inputs:
+  urls:
+    type: "list[str]"
+    description: "List of competitor URLs to monitor."
+

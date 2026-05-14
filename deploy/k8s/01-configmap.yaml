@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: agent-cloud-config
+  namespace: agent-cloud
+data:
+  REDIS_URL: "redis://redis:6379/0"
+  REDIS_KEY_NAMESPACE: ""
+  REDIS_QUEUE_BLOCK_TIMEOUT: "30"
+  LOCK_TTL_S: "300"
+  MAX_TASK_RETRIES: "5"
+  RETRY_BACKOFF_BASE_MS: "1000"
+  # DATABASE_URL should come from Secret in production

@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: agent-cloud-worker
+  namespace: agent-cloud
+  labels:
+    app.kubernetes.io/name: agent-cloud
+    app.kubernetes.io/component: worker
+spec:
+  # Baseline replicas; prefer HPA or KEDA ScaledObject for production.
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: agent-cloud
+      app.kubernetes.io/component: worker
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: agent-cloud
+        app.kubernetes.io/component: worker
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        fsGroup: 65532
+      containers:
+        - name: worker
+          image: ghcr.io/agent-cloud/agent-cloud-worker:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: WORKER_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          envFrom:
+            - configMapRef:
+                name: agent-cloud-config
+            - secretRef:
+                name: agent-cloud-secrets
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "1Gi"
+            limits:
+              cpu: "4000m"
+              memory: "8Gi"
+          terminationMessagePolicy: FallbackToLogsOnError

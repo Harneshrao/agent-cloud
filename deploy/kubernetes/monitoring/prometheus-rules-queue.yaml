@@ -1,0 +1,22 @@
+# Example PrometheusRule for queue depth (requires redis_exporter scraping Redis).
+# Point your Prometheus at redis_exporter and adjust metric names to your setup.
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: agent-cloud-queue-alerts
+  namespace: agent-cloud
+  labels:
+    app.kubernetes.io/name: agent-cloud
+    release: kube-prometheus-stack
+spec:
+  groups:
+    - name: agent-cloud-queue
+      rules:
+        - alert: AgentCloudQueueBacklogHigh
+          expr: redis_list_length{key="queue:ready"} > 1000
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Task queue backlog is high"
+            description: "queue:ready length > 1000 for 10m — scale workers or investigate producers."

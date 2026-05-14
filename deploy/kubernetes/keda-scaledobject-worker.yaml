@@ -1,0 +1,41 @@
+# KEDA — scale workers from Redis list length (queue:ready) + optional CPU.
+# Prerequisites: KEDA installed (https://keda.sh). Remove hpa-worker.yaml when using this.
+#
+# Tune listLength: backlog per replica before scaling out (lower = more aggressive).
+# Address must reach Redis from the cluster (same namespace Service or external endpoint).
+
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: agent-cloud-worker-queue
+  namespace: agent-cloud
+  labels:
+    app.kubernetes.io/name: agent-cloud
+spec:
+  scaleTargetRef:
+    name: agent-cloud-worker
+  minReplicaCount: 1
+  maxReplicaCount: 50
+  pollingInterval: 15
+  cooldownPeriod: 300
+  advanced:
+    horizontalPodAutoscalerConfig:
+      name: agent-cloud-worker-keda-hpa
+      behavior:
+        scaleDown:
+          stabilizationWindowSeconds: 300
+        scaleUp:
+          stabilizationWindowSeconds: 0
+  triggers:
+    - type: redis
+      metadata:
+        # Host:port reachable from KEDA operator pods (same-cluster Service or external LB)
+        address: agent-cloud-redis.agent-cloud.svc.cluster.local:6379
+        listName: queue:ready
+        # Target backlog per replica before scaling out (tune per workload)
+        listLength: "10"
+        enableTLS: "false"
+    - type: cpu
+      metricType: Utilization
+      metadata:
+        value: "70"

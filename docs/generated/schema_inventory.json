@@ -1,0 +1,202 @@
+{
+  "format": "agent-cloud.schema_inventory.v1",
+  "alembic_versions": [
+    {
+      "file": "a1b2c3d4e5f7_project_plans_table.py",
+      "revision": "a1b2c3d4e5f7",
+      "down_revision": "f8a9b0c1d2e3"
+    },
+    {
+      "file": "a967d0437c53_initial_uuid_schema.py",
+      "revision": "a967d0437c53",
+      "down_revision": null
+    },
+    {
+      "file": "b2c3d4e5f6a8_ensure_plans_free_post_a1b2.py",
+      "revision": "b2c3d4e5f6a8",
+      "down_revision": "a1b2c3d4e5f7"
+    },
+    {
+      "file": "c3d4e5f6a7b9_uuid_identity_hardening.py",
+      "revision": "c3d4e5f6a7b9",
+      "down_revision": "b2c3d4e5f6a8"
+    },
+    {
+      "file": "c4a8b1d2e3f4_legacy_project_workflow_uuid.py",
+      "revision": "c4a8b1d2e3f4",
+      "down_revision": "a967d0437c53"
+    },
+    {
+      "file": "e1f2a3b4c5d6_task_idempotency_uuid.py",
+      "revision": "e1f2a3b4c5d6",
+      "down_revision": "c3d4e5f6a7b9"
+    },
+    {
+      "file": "f2e3d4c5b6a7_execution_platform_core.py",
+      "revision": "f2e3d4c5b6a7",
+      "down_revision": "e1f2a3b4c5d6"
+    },
+    {
+      "file": "f8a9b0c1d2e3_dead_letter_task_retries_uuid.py",
+      "revision": "f8a9b0c1d2e3",
+      "down_revision": "c4a8b1d2e3f4"
+    }
+  ],
+  "alembic_inferred_tables": [
+    "agent_run_results",
+    "agent_runs",
+    "dead_letter_queue",
+    "dead_letter_tasks",
+    "plans",
+    "project_members",
+    "project_plans",
+    "projects",
+    "rate_limits",
+    "results",
+    "task_events",
+    "task_idempotency",
+    "task_logs",
+    "task_retries",
+    "tasks",
+    "usage_records",
+    "users",
+    "workflow_checkpoints",
+    "workflow_nodes"
+  ],
+  "sqlalchemy_models_database_models_py": [
+    {
+      "class": "User",
+      "__tablename__": "users"
+    },
+    {
+      "class": "Project",
+      "__tablename__": "projects"
+    },
+    {
+      "class": "ProjectMember",
+      "__tablename__": "project_members"
+    },
+    {
+      "class": "Task",
+      "__tablename__": "tasks"
+    },
+    {
+      "class": "TaskEvent",
+      "__tablename__": "task_events"
+    },
+    {
+      "class": "DeadLetterQueue",
+      "__tablename__": "dead_letter_queue"
+    },
+    {
+      "class": "RateLimit",
+      "__tablename__": "rate_limits"
+    },
+    {
+      "class": "TaskLog",
+      "__tablename__": "task_logs"
+    },
+    {
+      "class": "AgentRun",
+      "__tablename__": "agent_runs"
+    },
+    {
+      "class": "Result",
+      "__tablename__": "results"
+    },
+    {
+      "class": "WorkflowNode",
+      "__tablename__": "workflow_nodes"
+    },
+    {
+      "class": "WorkflowCheckpoint",
+      "__tablename__": "workflow_checkpoints"
+    },
+    {
+      "class": "UsageRecord",
+      "__tablename__": "usage_records"
+    },
+    {
+      "class": "AgentRunResult",
+      "__tablename__": "agent_run_results"
+    },
+    {
+      "class": "Plan",
+      "__tablename__": "plans"
+    },
+    {
+      "class": "ProjectPlan",
+      "__tablename__": "project_plans"
+    },
+    {
+      "class": "DeadLetterTask",
+      "__tablename__": "dead_letter_tasks"
+    },
+    {
+      "class": "TaskRetry",
+      "__tablename__": "task_retries"
+    }
+  ],
+  "symmetric_diff": {
+    "in_alembic_not_models": [
+      "task_idempotency"
+    ],
+    "in_models_not_alembic": []
+  },
+  "database_py_with_create_table_substring": [],
+  "database_py_with_ensure_schema": [
+    "agent_execution_metrics.py",
+    "agent_installations.py",
+    "agent_installs.py",
+    "agent_instances.py",
+    "agent_memory.py",
+    "agent_messages.py",
+    "agent_pricing.py",
+    "agent_production_hardening.py",
+    "agent_ratings.py",
+    "agent_revenue.py",
+    "agent_run_results.py",
+    "agent_schedules.py",
+    "agent_store.py",
+    "agent_usage_stats.py",
+    "api_keys.py",
+    "auth_sessions.py",
+    "automation_packages_db.py",
+    "autonomous_policies.py",
+    "dead_letter.py",
+    "developer_accounts.py",
+    "developer_economy.py",
+    "event_triggers.py",
+    "knowledge_graph.py",
+    "package_stats.py",
+    "plans.py",
+    "project_plans.py",
+    "prompts_db.py",
+    "refresh_tokens.py",
+    "regions.py",
+    "scheduled_tasks.py",
+    "simulation.py",
+    "task_graph.py",
+    "task_idempotency.py",
+    "teams.py",
+    "template_installs.py",
+    "template_publications.py",
+    "template_versions.py",
+    "usage_records.py",
+    "worker_capabilities.py",
+    "workers.py",
+    "workflow_analytics.py",
+    "workflow_checkpoints.py",
+    "workflow_nodes.py",
+    "workflow_templates.py"
+  ],
+  "solana_agent": {
+    "async_metadata_create_all": "solana_agent/app/core/database.py:create_tables",
+    "example_model": [
+      {
+        "class": "Task",
+        "__tablename__": "tasks"
+      }
+    ]
+  }
+}

@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agent-cloud"
+version = "0.1.0"
+requires-python = ">=3.11,<3.12"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["agent_cloud*"]
+
+[project.scripts]
+agent = "cli.agenthub_cli:main"
+agenthub = "cli.agenthub_cli:main"
+
+[tool.black]
+line-length = 100
+
+[tool.isort]
+profile = "black"
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_unused_ignores = true
+show_error_codes = true
+explicit_package_bases = true
+namespace_packages = true
+exclude = [
+    "^\\.venv/",
+    "^dashboard/",
+]
+
+[[tool.mypy.overrides]]
+module = [
+    "redis.*",
+    "jose.*",
+    "psycopg2.*",
+]
+ignore_missing_imports = true

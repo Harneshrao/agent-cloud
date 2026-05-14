@@ -1,0 +1,16 @@
+name: market_research_automation
+version: "1.0"
+description: Research and analyze markets automatically
+
+agents:
+  - research_agent
+  - analysis_agent
+
+workflow:
+  nodes:
+    - research_agent
+    - analysis_agent
+
+parameters:
+  topic: string
+  region: string

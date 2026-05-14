@@ -1,0 +1,20 @@
+# Top-level dependencies only. Lock file generated with: pip-compile requirements.in
+fastapi
+psycopg2-binary
+sqlalchemy
+alembic
+python-multipart
+uvicorn
+redis
+chromadb
+requests
+beautifulsoup4
+python-jose
+croniter
+google-auth
+google-auth-oauthlib
+httpx
+openai>=1.0.0
+playwright
+playwright-stealth
+Pillow

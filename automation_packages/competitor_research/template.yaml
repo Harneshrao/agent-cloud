@@ -1,0 +1,13 @@
+name: competitor_research_automation
+version: "1.0"
+description: Research competitors using package-scoped agents
+
+agents:
+  - research_agent
+
+workflow:
+  nodes:
+    - research_agent
+
+parameters:
+  competitor: string

@@ -1,0 +1,3035 @@
+{
+  "format": "agent-cloud.repo_inventory.v1",
+  "root": "C:\\Users\\harne\\agent-cloud",
+  "skip_dir_names": [
+    ".eggs",
+    ".git",
+    ".mypy_cache",
+    ".next",
+    ".pytest_cache",
+    ".ruff_cache",
+    ".venv",
+    "__pycache__",
+    "build",
+    "dist",
+    "node_modules",
+    "venv"
+  ],
+  "tree": {
+    "type": "dir",
+    "name": "agent-cloud",
+    "children": [
+      {
+        "type": "dir",
+        "name": ".cursor",
+        "children": [
+          {
+            "type": "file",
+            "name": "debug-24cf0b.log"
+          }
+        ]
+      },
+      {
+        "type": "dir",
+        "name": "agent_cloud",
+        "children": [
+          {
+            "type": "dir",
+            "name": "app",
+            "children": [
+              {
+                "type": "dir",
+                "name": "api",
+                "children": [
+                  {
+                    "type": "dir",
+                    "name": "v1",
+                    "children": [
+                      {
+                        "type": "dir",
+                        "name": "routes",
+                        "children": [
+                          {
+                            "type": "file",
+                            "name": "__init__.py"
+                          },
+                          {
+                            "type": "file",
+                            "name": "agents.py"
+                          },
+                          {
+                            "type": "file",
+                            "name": "auth.py"
+                          },
+                          {
+                            "type": "file",
+                            "name": "system.py"
+                          },
+                          {
+                            "type": "file",
+                            "name": "tasks.py"
+                          },
+                          {
+                            "type": "file",
+                            "name": "workflows.py"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "file",
+                        "name": "__init__.py"
+                      },
+                      {
+                        "type": "file",
+                        "name": "deps.py"
+                      },
+                      {
+                        "type": "file",
+                        "name": "router.py"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "file",
+                    "name": "__init__.py"
+                  },
+                  {
+                    "type": "file",
+                    "name": "main.py"
+                  }
+                ]
+              },
+              {
+                "type": "dir",
+                "name": "cli",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "__init__.py"
+                  },
+                  {
+                    "type": "file",
+                    "name": "commands.py"
+                  }
+                ]
+              },
+              {
+                "type": "dir",
+                "name": "workers",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "__init__.py"
+                  },
+                  {
+                    "type": "file",
+                    "name": "scheduler.py"
+                  },
+                  {
+                    "type": "file",
+                    "name": "worker.py"
+                  }
+                ]
+              },
+              {
+                "type": "file",
+                "name": "__init__.py"
+              }
+            ]
+          },
+          {
+            "type": "dir",
+            "name": "contracts",
+            "children": [
+              {
+                "type": "dir",
+                "name": "api",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "__init__.py"
+                  },
+                  {
+                    "type": "file",
+                    "name": "request.py"
+                  },
+                  {
+                    "type": "file",
+                    "name": "response.py"
+                  }
+                ]
+              },
+              {
+                "type": "dir",
+                "name": "dto",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "__init__.py"
+                  },
+                  {
+                    "type": "file",
+                    "name": "task_dto.py"
+                  },
+                  {
+                    "type": "file",
+                    "name": "workflow_dto.py"
+                  }
+                ]
+              },
+              {
+                "type": "dir",
+                "name": "events",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "task_events.py"
+                  }
+                ]
+              },
+              {
+                "type": "file",
+                "name": "__init__.py"
+              }
+            ]
+          },
+          {
+            "type": "dir",
+            "name": "core",
+            "children": [
+              {
+                "type": "dir",
+                "name": "agents",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "__init__.py"
+                  },
+                  {
+                    "type": "file",
+                    "name": "registry.py"
+                  },
+                  {
+                    "type": "file",
+                    "name": "runtime.py"
+                  },
+                  {
+                    "type": "file",
+                    "name": "sandbox.py"
+                  }
+                ]
+              },
+              {
+                "type": "dir",
+                "name": "rate_limit",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "__init__.py"
+                  },
+                  {
+                    "type": "file",
+                    "name": "service.py"
+                  }
+                ]
+              },
+              {
+                "type": "dir",
+                "name": "resilience",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "__init__.py"
+                  },
+                  {
+                    "type": "file",
+                    "name": "circuit_breaker.py"
+                  }
+                ]
+              },
+              {
+                "type": "dir",
+                "name": "security",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "__init__.py"
+                  },
+                  {
+                    "type": "file",
+                    "name": "sandbox.py"
+                  },
+                  {
+                    "type": "file",
+                    "name": "ssrf.py"
+                  },
+                  {
+                    "type": "file",
+                    "name": "validation.py"
+                  }
+                ]
+              },
+              {
+                "type": "dir",
+                "name": "tasks",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "__init__.py"
+                  },
+                  {
+                    "type": "file",
+                    "name": "enums.py"
+                  },
+                  {
+                    "type": "file",
+                    "name": "models.py"
+                  },
+                  {
+                    "type": "file",
+                    "name": "ports.py"
+                  },
+                  {
+                    "type": "file",
+                    "name": "service.py"
+                  }
+                ]
+              },
+              {
+                "type": "dir",
+                "name": "workflows",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "__init__.py"
+                  },
+                  {
+                    "type": "file",
+                    "name": "dag_engine.py"
+                  },
+                  {
+                    "type": "file",
+                    "name": "executor.py"
+                  },
+                  {
+                    "type": "file",
+                    "name": "scheduler.py"
+                  }
+                ]
+              },
+              {
+                "type": "file",
+                "name": "__init__.py"
+              }
+            ]
+          },
+          {
+            "type": "dir",
+            "name": "docker",
+            "children": [
+              {
+                "type": "file",
+                "name": "README.md"
+              }
+            ]
+          },
+          {
+            "type": "dir",
+            "name": "execution",
+            "children": [
+              {
+                "type": "dir",
+                "name": "scheduler",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "__init__.py"
+                  },
+                  {
+                    "type": "file",
+                    "name": "promoter.py"
+                  }
+                ]
+              },
+              {
+                "type": "dir",
+                "name": "worker",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "__init__.py"
+                  },
+                  {
+                    "type": "file",
+                    "name": "executor.py"
+                  },
+                  {
+                    "type": "file",
+                    "name": "loop.py"
+                  },
+                  {
+                    "type": "file",
+                    "name": "recovery.py"
+                  },
+                  {
+                    "type": "file",
+                    "name": "retry.py"
+                  }
+                ]
+              },
+              {
+                "type": "file",
+                "name": "__init__.py"
+              }
+            ]
+          },
+          {
+            "type": "dir",
+            "name": "infra",
+            "children": [
+              {
+                "type": "dir",
+                "name": "config",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "__init__.py"
+                  },
+                  {
+                    "type": "file",
+                    "name": "logging.py"
+                  },
+                  {
+                    "type": "file",
+                    "name": "settings.py"
+                  }
+                ]
+              },
+              {
+                "type": "dir",
+                "name": "db",
+                "children": [
+                  {
+                    "type": "dir",
+                    "name": "migrations",
+                    "children": [
+                      {
+                        "type": "file",
+                        "name": "README.md"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "dir",
+                    "name": "repositories",
+                    "children": [
+                      {
+                        "type": "file",
+                        "name": "__init__.py"
+                      },
+                      {
+                        "type": "file",
+                        "name": "project_repo.py"
+                      },
+                      {
+                        "type": "file",
+                        "name": "task_repo.py"
+                      },
+                      {
+                        "type": "file",
+                        "name": "workflow_repo.py"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "file",
+                    "name": "__init__.py"
+                  },
+                  {
+                    "type": "file",
+                    "name": "models.py"
+                  },
+                  {
+                    "type": "file",
+                    "name": "session.py"
+                  },
+                  {
+                    "type": "file",
+                    "name": "task_events_repo.py"
+                  }
+                ]
+              },
+              {
+                "type": "dir",
+                "name": "external",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "__init__.py"
+                  },
+                  {
+                    "type": "file",
+                    "name": "http_client.py"
+                  },
+                  {
+                    "type": "file",
+                    "name": "openai_client.py"
+                  }
+                ]
+              },
+              {
+                "type": "dir",
+                "name": "observability",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "__init__.py"
+                  },
+                  {
+                    "type": "file",
+                    "name": "context.py"
+                  },
+                  {
+                    "type": "file",
+                    "name": "metrics.py"
+                  },
+                  {
+                    "type": "file",
+                    "name": "structured_log.py"
+                  }
+                ]
+              },
+              {
+                "type": "dir",
+                "name": "redis",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "__init__.py"
+                  },
+                  {
+                    "type": "file",
+                    "name": "client.py"
+                  },
+                  {
+                    "type": "file",
+                    "name": "locks.py"
+                  },
+                  {
+                    "type": "file",
+                    "name": "queues.py"
+                  },
+                  {
+                    "type": "file",
+                    "name": "rate_limit.py"
+                  },
+                  {
+                    "type": "file",
+                    "name": "scheduler.py"
+                  },
+                  {
+                    "type": "file",
+                    "name": "token_bucket.py"
+                  }
+                ]
+              },
+              {
+                "type": "file",
+                "name": "__init__.py"
+              }
+            ]
+          },
+          {
+            "type": "file",
+            "name": "__init__.py"
+          },
+          {
+            "type": "file",
+            "name": "README.md"
+          }
+        ]
+      },
+      {
+        "type": "dir",
+        "name": "agent_runtime",
+        "children": [
+          {
+            "type": "file",
+            "name": "__init__.py"
+          },
+          {
+            "type": "file",
+            "name": "base.py"
+          },
+          {
+            "type": "file",
+            "name": "dependency_cache.py"
+          },
+          {
+            "type": "file",
+            "name": "docker_executor.py"
+          },
+          {
+            "type": "file",
+            "name": "Dockerfile.runtime"
+          },
+          {
+            "type": "file",
+            "name": "execution_engine.py"
+          },
+          {
+            "type": "file",
+            "name": "executor.py"
+          },
+          {
+            "type": "file",
+            "name": "loader.py"
+          },
+          {
+            "type": "file",
+            "name": "logging.py"
+          },
+          {
+            "type": "file",
+            "name": "memory.py"
+          },
+          {
+            "type": "file",
+            "name": "package_loader.py"
+          },
+          {
+            "type": "file",
+            "name": "package_validation.py"
+          },
+          {
+            "type": "file",
+            "name": "runner.py"
+          },
+          {
+            "type": "file",
+            "name": "sandbox.py"
+          },
+          {
+            "type": "file",
+            "name": "storage_paths.py"
+          }
+        ]
+      },
+      {
+        "type": "dir",
+        "name": "agentcloud_sdk",
+        "children": [
+          {
+            "type": "file",
+            "name": "__init__.py"
+          },
+          {
+            "type": "file",
+            "name": "agent.py"
+          },
+          {
+            "type": "file",
+            "name": "client.py"
+          }
+        ]
+      },
+      {
+        "type": "dir",
+        "name": "agents",
+        "children": [
+          {
+            "type": "dir",
+            "name": "competitor_intelligence",
+            "children": [
+              {
+                "type": "file",
+                "name": "__init__.py"
+              },
+              {
+                "type": "file",
+                "name": "agent.py"
+              },
+              {
+                "type": "file",
+                "name": "config.yaml"
+              },
+              {
+                "type": "file",
+                "name": "README.md"
+              }
+            ]
+          },
+          {
+            "type": "dir",
+            "name": "registry",
+            "children": [
+              {
+                "type": "file",
+                "name": "tool_registry.py"
+              }
+            ]
+          },
+          {
+            "type": "file",
+            "name": "__init__.py"
+          },
+          {
+            "type": "file",
+            "name": "content_agent.py"
+          },
+          {
+            "type": "file",
+            "name": "example_agent.py"
+          },
+          {
+            "type": "file",
+            "name": "execution_agent.py"
+          },
+          {
+            "type": "file",
+            "name": "loader.py"
+          },
+          {
+            "type": "file",
+            "name": "planner_agent.py"
+          },
+          {
+            "type": "file",
+            "name": "registry.py"
+          },
+          {
+            "type": "file",
+            "name": "research_agent.py"
+          },
+          {
+            "type": "file",
+            "name": "strategy_agent.py"
+          },
+          {
+            "type": "file",
+            "name": "test_agent_loader.py"
+          },
+          {
+            "type": "file",
+            "name": "tool_agent.py"
+          }
+        ]
+      },
+      {
+        "type": "dir",
+        "name": "alembic",
+        "children": [
+          {
+            "type": "dir",
+            "name": "versions",
+            "children": [
+              {
+                "type": "file",
+                "name": "a1b2c3d4e5f7_project_plans_table.py"
+              },
+              {
+                "type": "file",
+                "name": "a967d0437c53_initial_uuid_schema.py"
+              },
+              {
+                "type": "file",
+                "name": "b2c3d4e5f6a8_ensure_plans_free_post_a1b2.py"
+              },
+              {
+                "type": "file",
+                "name": "c3d4e5f6a7b9_uuid_identity_hardening.py"
+              },
+              {
+                "type": "file",
+                "name": "c4a8b1d2e3f4_legacy_project_workflow_uuid.py"
+              },
+              {
+                "type": "file",
+                "name": "e1f2a3b4c5d6_task_idempotency_uuid.py"
+              },
+              {
+                "type": "file",
+                "name": "f2e3d4c5b6a7_execution_platform_core.py"
+              },
+              {
+                "type": "file",
+                "name": "f8a9b0c1d2e3_dead_letter_task_retries_uuid.py"
+              }
+            ]
+          },
+          {
+            "type": "file",
+            "name": "env.py"
+          },
+          {
+            "type": "file",
+            "name": "README.md"
+          },
+          {
+            "type": "file",
+            "name": "script.py.mako"
+          }
+        ]
+      },
+      {
+        "type": "dir",
+        "name": "api",
+        "children": [
+          {
+            "type": "dir",
+            "name": "middleware",
+            "children": [
+              {
+                "type": "file",
+                "name": "__init__.py"
+              },
+              {
+                "type": "file",
+                "name": "rate_limit.py"
+              },
+              {
+                "type": "file",
+                "name": "security_headers.py"
+              },
+              {
+                "type": "file",
+                "name": "token_bucket_rate_limit.py"
+              },
+              {
+                "type": "file",
+                "name": "trace_context.py"
+              }
+            ]
+          },
+          {
+            "type": "dir",
+            "name": "schemas",
+            "children": [
+              {
+                "type": "file",
+                "name": "__init__.py"
+              },
+              {
+                "type": "file",
+                "name": "task_responses.py"
+              }
+            ]
+          },
+          {
+            "type": "file",
+            "name": "agent_installations_api.py"
+          },
+          {
+            "type": "file",
+            "name": "agent_instances_api.py"
+          },
+          {
+            "type": "file",
+            "name": "agent_marketplace_api.py"
+          },
+          {
+            "type": "file",
+            "name": "agent_store_api.py"
+          },
+          {
+            "type": "file",
+            "name": "agents_api.py"
+          },
+          {
+            "type": "file",
+            "name": "agents_installations_product_api.py"
+          },
+          {
+            "type": "file",
+            "name": "agents_v2_api.py"
+          },
+          {
+            "type": "file",
+            "name": "api_keys_api.py"
+          },
+          {
+            "type": "file",
+            "name": "auth_api.py"
+          },
+          {
+            "type": "file",
+            "name": "auth_google.py"
+          },
+          {
+            "type": "file",
+            "name": "autonomous_policies_api.py"
+          },
+          {
+            "type": "file",
+            "name": "body_size_limit.py"
+          },
+          {
+            "type": "file",
+            "name": "demo_api.py"
+          },
+          {
+            "type": "file",
+            "name": "deps.py"
+          },
+          {
+            "type": "file",
+            "name": "developers_economy_api.py"
+          },
+          {
+            "type": "file",
+            "name": "email_sender.py"
+          },
+          {
+            "type": "file",
+            "name": "event_api.py"
+          },
+          {
+            "type": "file",
+            "name": "jwt_handler.py"
+          },
+          {
+            "type": "file",
+            "name": "main.py"
+          },
+          {
+            "type": "file",
+            "name": "marketplace_api.py"
+          },
+          {
+            "type": "file",
+            "name": "migration_check.py"
+          },
+          {
+            "type": "file",
+            "name": "packages_api.py"
+          },
+          {
+            "type": "file",
+            "name": "plans_api.py"
+          },
+          {
+            "type": "file",
+            "name": "projects_api.py"
+          },
+          {
+            "type": "file",
+            "name": "rate_limit.py"
+          },
+          {
+            "type": "file",
+            "name": "scheduler_api.py"
+          },
+          {
+            "type": "file",
+            "name": "security.py"
+          },
+          {
+            "type": "file",
+            "name": "security_logger.py"
+          },
+          {
+            "type": "file",
+            "name": "simulation_api.py"
+          },
+          {
+            "type": "file",
+            "name": "system_api.py"
+          },
+          {
+            "type": "file",
+            "name": "task_scheduler_api.py"
+          },
+          {
+            "type": "file",
+            "name": "teams_api.py"
+          },
+          {
+            "type": "file",
+            "name": "template_versions_api.py"
+          },
+          {
+            "type": "file",
+            "name": "templates_api.py"
+          },
+          {
+            "type": "file",
+            "name": "usage_api.py"
+          },
+          {
+            "type": "file",
+            "name": "war_room_api.py"
+          },
+          {
+            "type": "file",
+            "name": "webhook_api.py"
+          },
+          {
+            "type": "file",
+            "name": "workflow_api.py"
+          }
+        ]
+      },
+      {
+        "type": "dir",
+        "name": "app",
+        "children": [
+          {
+            "type": "dir",
+            "name": "api",
+            "children": [
+              {
+                "type": "file",
+                "name": "__init__.py"
+              },
+              {
+                "type": "file",
+                "name": "main.py"
+              }
+            ]
+          },
+          {
+            "type": "dir",
+            "name": "workers",
+            "children": [
+              {
+                "type": "file",
+                "name": "__init__.py"
+              },
+              {
+                "type": "file",
+                "name": "scheduler.py"
+              },
+              {
+                "type": "file",
+                "name": "worker.py"
+              }
+            ]
+          },
+          {
+            "type": "file",
+            "name": "__init__.py"
+          }
+        ]
+      },
+      {
+        "type": "dir",
+        "name": "automation_packages",
+        "children": [
+          {
+            "type": "dir",
+            "name": "competitor_research",
+            "children": [
+              {
+                "type": "dir",
+                "name": "agents",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "research_agent.py"
+                  }
+                ]
+              },
+              {
+                "type": "file",
+                "name": "template.yaml"
+              }
+            ]
+          },
+          {
+            "type": "dir",
+            "name": "market_research",
+            "children": [
+              {
+                "type": "dir",
+                "name": "agents",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "analysis_agent.py"
+                  },
+                  {
+                    "type": "file",
+                    "name": "research_agent.py"
+                  }
+                ]
+              },
+              {
+                "type": "dir",
+                "name": "prompts",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "analysis_prompt.txt"
+                  },
+                  {
+                    "type": "file",
+                    "name": "research_prompt.txt"
+                  }
+                ]
+              },
+              {
+                "type": "file",
+                "name": "template.yaml"
+              }
+            ]
+          },
+          {
+            "type": "file",
+            "name": "__init__.py"
+          },
+          {
+            "type": "file",
+            "name": "loader.py"
+          },
+          {
+            "type": "file",
+            "name": "prompt_loader.py"
+          }
+        ]
+      },
+      {
+        "type": "dir",
+        "name": "cli",
+        "children": [
+          {
+            "type": "file",
+            "name": "agenthub_cli.py"
+          }
+        ]
+      },
+      {
+        "type": "dir",
+        "name": "config",
+        "children": [
+          {
+            "type": "file",
+            "name": "redis_keys.py"
+          },
+          {
+            "type": "file",
+            "name": "settings.py"
+          }
+        ]
+      },
+      {
+        "type": "dir",
+        "name": "containers",
+        "children": [
+          {
+            "type": "file",
+            "name": "agent_runtime.Dockerfile"
+          }
+        ]
+      },
+      {
+        "type": "dir",
+        "name": "contracts",
+        "children": [
+          {
+            "type": "dir",
+            "name": "api",
+            "children": []
+          }
+        ]
+      },
+      {
+        "type": "dir",
+        "name": "core",
+        "children": [
+          {
+            "type": "file",
+            "name": "__init__.py"
+          },
+          {
+            "type": "file",
+            "name": "goal_mapper.py"
+          },
+          {
+            "type": "file",
+            "name": "war_room_engine.py"
+          }
+        ]
+      },
+      {
+        "type": "dir",
+        "name": "dashboard",
+        "children": [
+          {
+            "type": "dir",
+            "name": "app",
+            "children": [
+              {
+                "type": "dir",
+                "name": "agents",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "page.tsx"
+                  }
+                ]
+              },
+              {
+                "type": "dir",
+                "name": "analyze",
+                "children": []
+              },
+              {
+                "type": "dir",
+                "name": "auth",
+                "children": [
+                  {
+                    "type": "dir",
+                    "name": "callback",
+                    "children": [
+                      {
+                        "type": "file",
+                        "name": "page.tsx"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "dir",
+                "name": "automation",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "page.tsx"
+                  }
+                ]
+              },
+              {
+                "type": "dir",
+                "name": "dashboard",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "page.tsx"
+                  }
+                ]
+              },
+              {
+                "type": "dir",
+                "name": "developer",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "page.tsx"
+                  }
+                ]
+              },
+              {
+                "type": "dir",
+                "name": "forgot-password",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "page.tsx"
+                  }
+                ]
+              },
+              {
+                "type": "dir",
+                "name": "installations",
+                "children": [
+                  {
+                    "type": "dir",
+                    "name": "[id]",
+                    "children": [
+                      {
+                        "type": "dir",
+                        "name": "automation",
+                        "children": [
+                          {
+                            "type": "file",
+                            "name": "page.tsx"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "dir",
+                        "name": "configure",
+                        "children": [
+                          {
+                            "type": "file",
+                            "name": "page.tsx"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "dir",
+                "name": "login",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "page.tsx"
+                  }
+                ]
+              },
+              {
+                "type": "dir",
+                "name": "marketplace",
+                "children": [
+                  {
+                    "type": "dir",
+                    "name": "[agentName]",
+                    "children": [
+                      {
+                        "type": "file",
+                        "name": "page.tsx"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "file",
+                    "name": "page.tsx"
+                  }
+                ]
+              },
+              {
+                "type": "dir",
+                "name": "reset-password",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "page.tsx"
+                  }
+                ]
+              },
+              {
+                "type": "dir",
+                "name": "runs",
+                "children": [
+                  {
+                    "type": "dir",
+                    "name": "[runId]",
+                    "children": [
+                      {
+                        "type": "file",
+                        "name": "page.tsx"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "file",
+                    "name": "page.tsx"
+                  }
+                ]
+              },
+              {
+                "type": "dir",
+                "name": "schedules",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "page.tsx"
+                  }
+                ]
+              },
+              {
+                "type": "dir",
+                "name": "signup",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "page.tsx"
+                  }
+                ]
+              },
+              {
+                "type": "dir",
+                "name": "system",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "page.tsx"
+                  }
+                ]
+              },
+              {
+                "type": "dir",
+                "name": "usage",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "page.tsx"
+                  }
+                ]
+              },
+              {
+                "type": "dir",
+                "name": "verify-email",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "page.tsx"
+                  }
+                ]
+              },
+              {
+                "type": "dir",
+                "name": "war-room",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "page.tsx"
+                  }
+                ]
+              },
+              {
+                "type": "dir",
+                "name": "workflows",
+                "children": [
+                  {
+                    "type": "dir",
+                    "name": "[task_id]",
+                    "children": [
+                      {
+                        "type": "file",
+                        "name": "page.tsx"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "dir",
+                    "name": "builder",
+                    "children": [
+                      {
+                        "type": "file",
+                        "name": "page.tsx"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "file",
+                    "name": "page.tsx"
+                  }
+                ]
+              },
+              {
+                "type": "file",
+                "name": "error.tsx"
+              },
+              {
+                "type": "file",
+                "name": "globals.css"
+              },
+              {
+                "type": "file",
+                "name": "layout.tsx"
+              },
+              {
+                "type": "file",
+                "name": "loading.tsx"
+              },
+              {
+                "type": "file",
+                "name": "page.tsx"
+              },
+              {
+                "type": "file",
+                "name": "providers.tsx"
+              }
+            ]
+          },
+          {
+            "type": "dir",
+            "name": "components",
+            "children": [
+              {
+                "type": "dir",
+                "name": "auth",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "auth-button.tsx"
+                  },
+                  {
+                    "type": "file",
+                    "name": "auth-card.tsx"
+                  },
+                  {
+                    "type": "file",
+                    "name": "auth-guard.tsx"
+                  },
+                  {
+                    "type": "file",
+                    "name": "auth-input.tsx"
+                  },
+                  {
+                    "type": "file",
+                    "name": "auth-layout.tsx"
+                  }
+                ]
+              },
+              {
+                "type": "dir",
+                "name": "charts",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "success-failure-chart.tsx"
+                  },
+                  {
+                    "type": "file",
+                    "name": "tasks-chart.tsx"
+                  }
+                ]
+              },
+              {
+                "type": "dir",
+                "name": "demos",
+                "children": []
+              },
+              {
+                "type": "dir",
+                "name": "logs",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "log-stream.tsx"
+                  }
+                ]
+              },
+              {
+                "type": "dir",
+                "name": "marketplace",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "agent-marketplace-card.tsx"
+                  }
+                ]
+              },
+              {
+                "type": "dir",
+                "name": "product",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "glass-card.tsx"
+                  },
+                  {
+                    "type": "file",
+                    "name": "run-status-badge.tsx"
+                  },
+                  {
+                    "type": "file",
+                    "name": "stat-card.tsx"
+                  }
+                ]
+              },
+              {
+                "type": "dir",
+                "name": "search",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "command-palette.tsx"
+                  }
+                ]
+              },
+              {
+                "type": "dir",
+                "name": "system",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "system-metrics.tsx"
+                  }
+                ]
+              },
+              {
+                "type": "dir",
+                "name": "ui",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "button.tsx"
+                  },
+                  {
+                    "type": "file",
+                    "name": "card.tsx"
+                  },
+                  {
+                    "type": "file",
+                    "name": "dialog.tsx"
+                  },
+                  {
+                    "type": "file",
+                    "name": "dropdown-menu.tsx"
+                  },
+                  {
+                    "type": "file",
+                    "name": "empty-state.tsx"
+                  },
+                  {
+                    "type": "file",
+                    "name": "hero-video-dialog.tsx"
+                  },
+                  {
+                    "type": "file",
+                    "name": "input.tsx"
+                  },
+                  {
+                    "type": "file",
+                    "name": "label.tsx"
+                  },
+                  {
+                    "type": "file",
+                    "name": "metric-card.tsx"
+                  },
+                  {
+                    "type": "file",
+                    "name": "premium-card.tsx"
+                  },
+                  {
+                    "type": "file",
+                    "name": "section.tsx"
+                  },
+                  {
+                    "type": "file",
+                    "name": "skeleton.tsx"
+                  },
+                  {
+                    "type": "file",
+                    "name": "stat-card.tsx"
+                  }
+                ]
+              },
+              {
+                "type": "dir",
+                "name": "workflow",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "agent-node.tsx"
+                  },
+                  {
+                    "type": "file",
+                    "name": "flow-view.tsx"
+                  },
+                  {
+                    "type": "file",
+                    "name": "workflow-builder-canvas.tsx"
+                  },
+                  {
+                    "type": "file",
+                    "name": "workflow-builder-node.tsx"
+                  },
+                  {
+                    "type": "file",
+                    "name": "workflow-timeline.tsx"
+                  }
+                ]
+              },
+              {
+                "type": "file",
+                "name": "agent-card.tsx"
+              },
+              {
+                "type": "file",
+                "name": "animated-number.tsx"
+              },
+              {
+                "type": "file",
+                "name": "api-connection-banner.tsx"
+              },
+              {
+                "type": "file",
+                "name": "app-shell.tsx"
+              },
+              {
+                "type": "file",
+                "name": "chrome-layout.tsx"
+              },
+              {
+                "type": "file",
+                "name": "container-utilization.tsx"
+              },
+              {
+                "type": "file",
+                "name": "empty-state.tsx"
+              },
+              {
+                "type": "file",
+                "name": "metric-card.tsx"
+              },
+              {
+                "type": "file",
+                "name": "run-agent-modal.tsx"
+              },
+              {
+                "type": "file",
+                "name": "sidebar.tsx"
+              },
+              {
+                "type": "file",
+                "name": "topbar.tsx"
+              },
+              {
+                "type": "file",
+                "name": "worker-table.tsx"
+              }
+            ]
+          },
+          {
+            "type": "dir",
+            "name": "hooks",
+            "children": [
+              {
+                "type": "file",
+                "name": "use-api-health.ts"
+              },
+              {
+                "type": "file",
+                "name": "use-dashboard.ts"
+              },
+              {
+                "type": "file",
+                "name": "use-installation-runs.ts"
+              },
+              {
+                "type": "file",
+                "name": "use-marketplace.ts"
+              },
+              {
+                "type": "file",
+                "name": "use-system-stream.ts"
+              },
+              {
+                "type": "file",
+                "name": "use-workflow-live.ts"
+              },
+              {
+                "type": "file",
+                "name": "useApi.ts"
+              }
+            ]
+          },
+          {
+            "type": "dir",
+            "name": "lib",
+            "children": [
+              {
+                "type": "file",
+                "name": "api.ts"
+              },
+              {
+                "type": "file",
+                "name": "auth.ts"
+              },
+              {
+                "type": "file",
+                "name": "stream.ts"
+              },
+              {
+                "type": "file",
+                "name": "utils.ts"
+              }
+            ]
+          },
+          {
+            "type": "dir",
+            "name": "scripts",
+            "children": []
+          },
+          {
+            "type": "dir",
+            "name": "services",
+            "children": [
+              {
+                "type": "file",
+                "name": "api.ts"
+              }
+            ]
+          },
+          {
+            "type": "dir",
+            "name": "types",
+            "children": [
+              {
+                "type": "file",
+                "name": "index.ts"
+              }
+            ]
+          },
+          {
+            "type": "file",
+            "name": ".dockerignore"
+          },
+          {
+            "type": "file",
+            "name": ".env.local"
+          },
+          {
+            "type": "file",
+            "name": ".env.local.example"
+          },
+          {
+            "type": "file",
+            "name": ".npmrc"
+          },
+          {
+            "type": "file",
+            "name": "Dockerfile"
+          },
+          {
+            "type": "file",
+            "name": "next-env.d.ts"
+          },
+          {
+            "type": "file",
+            "name": "next.config.js"
+          },
+          {
+            "type": "file",
+            "name": "package-lock.json"
+          },
+          {
+            "type": "file",
+            "name": "package.json"
+          },
+          {
+            "type": "file",
+            "name": "postcss.config.js"
+          },
+          {
+            "type": "file",
+            "name": "README.md"
+          },
+          {
+            "type": "file",
+            "name": "README_RUN.md"
+          },
+          {
+            "type": "file",
+            "name": "tailwind.config.ts"
+          },
+          {
+            "type": "file",
+            "name": "tsconfig.json"
+          },
+          {
+            "type": "file",
+            "name": "tsconfig.tsbuildinfo"
+          }
+        ]
+      },
+      {
+        "type": "dir",
+        "name": "database",
+        "children": [
+          {
+            "type": "file",
+            "name": "__init__.py"
+          },
+          {
+            "type": "file",
+            "name": "agent_execution_metrics.py"
+          },
+          {
+            "type": "file",
+            "name": "agent_installations.py"
+          },
+          {
+            "type": "file",
+            "name": "agent_installs.py"
+          },
+          {
+            "type": "file",
+            "name": "agent_instances.py"
+          },
+          {
+            "type": "file",
+            "name": "agent_memory.py"
+          },
+          {
+            "type": "file",
+            "name": "agent_messages.py"
+          },
+          {
+            "type": "file",
+            "name": "agent_pricing.py"
+          },
+          {
+            "type": "file",
+            "name": "agent_production_hardening.py"
+          },
+          {
+            "type": "file",
+            "name": "agent_ratings.py"
+          },
+          {
+            "type": "file",
+            "name": "agent_revenue.py"
+          },
+          {
+            "type": "file",
+            "name": "agent_run_results.py"
+          },
+          {
+            "type": "file",
+            "name": "agent_schedules.py"
+          },
+          {
+            "type": "file",
+            "name": "agent_store.py"
+          },
+          {
+            "type": "file",
+            "name": "agent_usage_stats.py"
+          },
+          {
+            "type": "file",
+            "name": "api_keys.py"
+          },
+          {
+            "type": "file",
+            "name": "auth_sessions.py"
+          },
+          {
+            "type": "file",
+            "name": "automation_packages_db.py"
+          },
+          {
+            "type": "file",
+            "name": "autonomous_policies.py"
+          },
+          {
+            "type": "file",
+            "name": "db.py"
+          },
+          {
+            "type": "file",
+            "name": "dead_letter.py"
+          },
+          {
+            "type": "file",
+            "name": "developer_accounts.py"
+          },
+          {
+            "type": "file",
+            "name": "developer_analytics.py"
+          },
+          {
+            "type": "file",
+            "name": "developer_economy.py"
+          },
+          {
+            "type": "file",
+            "name": "event_triggers.py"
+          },
+          {
+            "type": "file",
+            "name": "knowledge_graph.py"
+          },
+          {
+            "type": "file",
+            "name": "migrations.py"
+          },
+          {
+            "type": "file",
+            "name": "models.py"
+          },
+          {
+            "type": "file",
+            "name": "package_stats.py"
+          },
+          {
+            "type": "file",
+            "name": "pg_compat.py"
+          },
+          {
+            "type": "file",
+            "name": "plans.py"
+          },
+          {
+            "type": "file",
+            "name": "project_members.py"
+          },
+          {
+            "type": "file",
+            "name": "project_plans.py"
+          },
+          {
+            "type": "file",
+            "name": "projects.py"
+          },
+          {
+            "type": "file",
+            "name": "prompts_db.py"
+          },
+          {
+            "type": "file",
+            "name": "refresh_tokens.py"
+          },
+          {
+            "type": "file",
+            "name": "regions.py"
+          },
+          {
+            "type": "file",
+            "name": "scheduled_tasks.py"
+          },
+          {
+            "type": "file",
+            "name": "session.py"
+          },
+          {
+            "type": "file",
+            "name": "simulation.py"
+          },
+          {
+            "type": "file",
+            "name": "task_graph.py"
+          },
+          {
+            "type": "file",
+            "name": "task_idempotency.py"
+          },
+          {
+            "type": "file",
+            "name": "teams.py"
+          },
+          {
+            "type": "file",
+            "name": "template_installs.py"
+          },
+          {
+            "type": "file",
+            "name": "template_publications.py"
+          },
+          {
+            "type": "file",
+            "name": "template_versions.py"
+          },
+          {
+            "type": "file",
+            "name": "usage_records.py"
+          },
+          {
+            "type": "file",
+            "name": "users.py"
+          },
+          {
+            "type": "file",
+            "name": "worker_capabilities.py"
+          },
+          {
+            "type": "file",
+            "name": "workers.py"
+          },
+          {
+            "type": "file",
+            "name": "workflow_analytics.py"
+          },
+          {
+            "type": "file",
+            "name": "workflow_checkpoints.py"
+          },
+          {
+            "type": "file",
+            "name": "workflow_nodes.py"
+          },
+          {
+            "type": "file",
+            "name": "workflow_templates.py"
+          }
+        ]
+      },
+      {
+        "type": "dir",
+        "name": "deploy",
+        "children": [
+          {
+            "type": "dir",
+            "name": "k8s",
+            "children": [
+              {
+                "type": "file",
+                "name": "00-namespace.yaml"
+              },
+              {
+                "type": "file",
+                "name": "01-configmap.yaml"
+              },
+              {
+                "type": "file",
+                "name": "02-secret.yaml"
+              },
+              {
+                "type": "file",
+                "name": "10-postgres.yaml"
+              },
+              {
+                "type": "file",
+                "name": "11-redis.yaml"
+              },
+              {
+                "type": "file",
+                "name": "20-api.yaml"
+              },
+              {
+                "type": "file",
+                "name": "21-worker.yaml"
+              },
+              {
+                "type": "file",
+                "name": "22-worker-hpa.yaml"
+              },
+              {
+                "type": "file",
+                "name": "23-scheduler.yaml"
+              }
+            ]
+          },
+          {
+            "type": "dir",
+            "name": "kubernetes",
+            "children": [
+              {
+                "type": "dir",
+                "name": "monitoring",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "prometheus-rules-queue.yaml"
+                  },
+                  {
+                    "type": "file",
+                    "name": "servicemonitor-api.yaml"
+                  }
+                ]
+              },
+              {
+                "type": "file",
+                "name": "api-deployment.yaml"
+              },
+              {
+                "type": "file",
+                "name": "api-service.yaml"
+              },
+              {
+                "type": "file",
+                "name": "configmap.yaml"
+              },
+              {
+                "type": "file",
+                "name": "hpa-worker.yaml"
+              },
+              {
+                "type": "file",
+                "name": "ingress.yaml"
+              },
+              {
+                "type": "file",
+                "name": "keda-scaledobject-worker.yaml"
+              },
+              {
+                "type": "file",
+                "name": "namespace.yaml"
+              },
+              {
+                "type": "file",
+                "name": "network-policy.yaml"
+              },
+              {
+                "type": "file",
+                "name": "pdb-api.yaml"
+              },
+              {
+                "type": "file",
+                "name": "README.md"
+              },
+              {
+                "type": "file",
+                "name": "redis-deployment.example.yaml"
+              },
+              {
+                "type": "file",
+                "name": "scheduler-deployment.yaml"
+              },
+              {
+                "type": "file",
+                "name": "secret.yaml.example"
+              },
+              {
+                "type": "file",
+                "name": "worker-deployment.yaml"
+              }
+            ]
+          },
+          {
+            "type": "file",
+            "name": "README.md"
+          }
+        ]
+      },
+      {
+        "type": "dir",
+        "name": "docker",
+        "children": [
+          {
+            "type": "file",
+            "name": "entrypoint-api.sh"
+          }
+        ]
+      },
+      {
+        "type": "dir",
+        "name": "docs",
+        "children": [
+          {
+            "type": "dir",
+            "name": "generated",
+            "children": [
+              {
+                "type": "file",
+                "name": "README.md"
+              },
+              {
+                "type": "file",
+                "name": "repo_inventory.txt"
+              },
+              {
+                "type": "file",
+                "name": "route_matrix.md"
+              },
+              {
+                "type": "file",
+                "name": "route_matrix_legacy.md"
+              },
+              {
+                "type": "file",
+                "name": "route_matrix_modular.md"
+              },
+              {
+                "type": "file",
+                "name": "schema_drift_audit.md"
+              }
+            ]
+          },
+          {
+            "type": "file",
+            "name": "DEPLOYMENT_OPERATIONS.md"
+          },
+          {
+            "type": "file",
+            "name": "E2E_AGENT_VERIFICATION.md"
+          },
+          {
+            "type": "file",
+            "name": "EXECUTION_PLATFORM.md"
+          },
+          {
+            "type": "file",
+            "name": "PRODUCTION_ARCHITECTURE.md"
+          }
+        ]
+      },
+      {
+        "type": "dir",
+        "name": "engine",
+        "children": [
+          {
+            "type": "file",
+            "name": "__init__.py"
+          },
+          {
+            "type": "file",
+            "name": "agent_ranking.py"
+          },
+          {
+            "type": "file",
+            "name": "alerting.py"
+          },
+          {
+            "type": "file",
+            "name": "autoscaler.py"
+          },
+          {
+            "type": "file",
+            "name": "container_pool.py"
+          },
+          {
+            "type": "file",
+            "name": "dag_scheduler.py"
+          },
+          {
+            "type": "file",
+            "name": "edge_routing.py"
+          },
+          {
+            "type": "file",
+            "name": "event_engine.py"
+          },
+          {
+            "type": "file",
+            "name": "execution_tracker.py"
+          },
+          {
+            "type": "file",
+            "name": "global_router.py"
+          },
+          {
+            "type": "file",
+            "name": "metrics_collector.py"
+          },
+          {
+            "type": "file",
+            "name": "package_installer.py"
+          },
+          {
+            "type": "file",
+            "name": "parallel_executor.py"
+          },
+          {
+            "type": "file",
+            "name": "quota_checker.py"
+          },
+          {
+            "type": "file",
+            "name": "safe_execution.py"
+          },
+          {
+            "type": "file",
+            "name": "sandbox_runner.py"
+          },
+          {
+            "type": "file",
+            "name": "stream_store.py"
+          },
+          {
+            "type": "file",
+            "name": "task_recovery.py"
+          },
+          {
+            "type": "file",
+            "name": "task_scheduler.py"
+          },
+          {
+            "type": "file",
+            "name": "template_ranking.py"
+          },
+          {
+            "type": "file",
+            "name": "template_runner.py"
+          },
+          {
+            "type": "file",
+            "name": "tool_executor.py"
+          },
+          {
+            "type": "file",
+            "name": "tool_selector.py"
+          },
+          {
+            "type": "file",
+            "name": "webhook_engine.py"
+          },
+          {
+            "type": "file",
+            "name": "worker_registry.py"
+          },
+          {
+            "type": "file",
+            "name": "workflow_optimization.py"
+          }
+        ]
+      },
+      {
+        "type": "dir",
+        "name": "execution",
+        "children": [
+          {
+            "type": "file",
+            "name": "__init__.py"
+          },
+          {
+            "type": "file",
+            "name": "backoff.py"
+          },
+          {
+            "type": "file",
+            "name": "recovery.py"
+          }
+        ]
+      },
+      {
+        "type": "dir",
+        "name": "gateway",
+        "children": []
+      },
+      {
+        "type": "dir",
+        "name": "infra",
+        "children": [
+          {
+            "type": "dir",
+            "name": "postgres",
+            "children": [
+              {
+                "type": "file",
+                "name": "execution_platform_reference.sql"
+              },
+              {
+                "type": "file",
+                "name": "schema.sql"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "dir",
+        "name": "kubernetes",
+        "children": [
+          {
+            "type": "file",
+            "name": "queue-scaler-cronjob.yaml"
+          },
+          {
+            "type": "file",
+            "name": "README.md"
+          },
+          {
+            "type": "file",
+            "name": "scale-by-queue.py"
+          },
+          {
+            "type": "file",
+            "name": "worker-configmap.yaml"
+          },
+          {
+            "type": "file",
+            "name": "worker-deployment.yaml"
+          },
+          {
+            "type": "file",
+            "name": "worker-hpa.yaml"
+          }
+        ]
+      },
+      {
+        "type": "dir",
+        "name": "memory",
+        "children": [
+          {
+            "type": "file",
+            "name": "__init__.py"
+          },
+          {
+            "type": "file",
+            "name": "memory_engine.py"
+          },
+          {
+            "type": "file",
+            "name": "memory_store.py"
+          }
+        ]
+      },
+      {
+        "type": "dir",
+        "name": "orchestrator",
+        "children": [
+          {
+            "type": "file",
+            "name": "capability_index.py"
+          },
+          {
+            "type": "file",
+            "name": "orchestrator.py"
+          },
+          {
+            "type": "file",
+            "name": "router.py"
+          },
+          {
+            "type": "file",
+            "name": "task_manager.py"
+          },
+          {
+            "type": "file",
+            "name": "workflow_controller.py"
+          }
+        ]
+      },
+      {
+        "type": "dir",
+        "name": "redis_queue_pkg",
+        "children": [
+          {
+            "type": "file",
+            "name": "__init__.py"
+          },
+          {
+            "type": "file",
+            "name": "idempotency.py"
+          },
+          {
+            "type": "file",
+            "name": "locks.py"
+          },
+          {
+            "type": "file",
+            "name": "redis_queue.py"
+          }
+        ]
+      },
+      {
+        "type": "dir",
+        "name": "registry",
+        "children": [
+          {
+            "type": "file",
+            "name": "__init__.py"
+          },
+          {
+            "type": "file",
+            "name": "agent_registry.py"
+          },
+          {
+            "type": "file",
+            "name": "package_registry.py"
+          },
+          {
+            "type": "file",
+            "name": "prompt_registry.py"
+          },
+          {
+            "type": "file",
+            "name": "tool_registry.py"
+          }
+        ]
+      },
+      {
+        "type": "dir",
+        "name": "scheduler",
+        "children": [
+          {
+            "type": "file",
+            "name": "redis_scheduler.py"
+          },
+          {
+            "type": "file",
+            "name": "scheduler_loop.py"
+          },
+          {
+            "type": "file",
+            "name": "scheduler_service.py"
+          }
+        ]
+      },
+      {
+        "type": "dir",
+        "name": "scripts",
+        "children": [
+          {
+            "type": "file",
+            "name": "clear_all_users.py"
+          },
+          {
+            "type": "file",
+            "name": "e2e_verify_agent_run.ps1"
+          },
+          {
+            "type": "file",
+            "name": "init_db.py"
+          },
+          {
+            "type": "file",
+            "name": "openapi_route_matrix.py"
+          },
+          {
+            "type": "file",
+            "name": "repo_inventory.py"
+          },
+          {
+            "type": "file",
+            "name": "reset_dev_db.py"
+          },
+          {
+            "type": "file",
+            "name": "schema_drift_audit.py"
+          },
+          {
+            "type": "file",
+            "name": "seed_data.py"
+          }
+        ]
+      },
+      {
+        "type": "dir",
+        "name": "sdk",
+        "children": [
+          {
+            "type": "file",
+            "name": "__init__.py"
+          },
+          {
+            "type": "file",
+            "name": "agent.py"
+          },
+          {
+            "type": "file",
+            "name": "package_loader.py"
+          },
+          {
+            "type": "file",
+            "name": "package_spec.py"
+          }
+        ]
+      },
+      {
+        "type": "dir",
+        "name": "security",
+        "children": [
+          {
+            "type": "file",
+            "name": "__init__.py"
+          },
+          {
+            "type": "file",
+            "name": "ssrf.py"
+          }
+        ]
+      },
+      {
+        "type": "dir",
+        "name": "services",
+        "children": [
+          {
+            "type": "file",
+            "name": "__init__.py"
+          },
+          {
+            "type": "file",
+            "name": "task_payload.py"
+          },
+          {
+            "type": "file",
+            "name": "task_service.py"
+          }
+        ]
+      },
+      {
+        "type": "dir",
+        "name": "solana_agent",
+        "children": [
+          {
+            "type": "dir",
+            "name": "app",
+            "children": [
+              {
+                "type": "dir",
+                "name": "api",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "__init__.py"
+                  },
+                  {
+                    "type": "file",
+                    "name": "agents.py"
+                  },
+                  {
+                    "type": "file",
+                    "name": "health.py"
+                  }
+                ]
+              },
+              {
+                "type": "dir",
+                "name": "core",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "__init__.py"
+                  },
+                  {
+                    "type": "file",
+                    "name": "config.py"
+                  },
+                  {
+                    "type": "file",
+                    "name": "database.py"
+                  },
+                  {
+                    "type": "file",
+                    "name": "orchestrator.py"
+                  }
+                ]
+              },
+              {
+                "type": "dir",
+                "name": "models",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "__init__.py"
+                  },
+                  {
+                    "type": "file",
+                    "name": "task.py"
+                  }
+                ]
+              },
+              {
+                "type": "dir",
+                "name": "services",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "__init__.py"
+                  },
+                  {
+                    "type": "file",
+                    "name": "agent_runner.py"
+                  },
+                  {
+                    "type": "file",
+                    "name": "solana_client.py"
+                  },
+                  {
+                    "type": "file",
+                    "name": "task_service.py"
+                  }
+                ]
+              },
+              {
+                "type": "dir",
+                "name": "utils",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "__init__.py"
+                  },
+                  {
+                    "type": "file",
+                    "name": "error_handler.py"
+                  },
+                  {
+                    "type": "file",
+                    "name": "idempotency.py"
+                  },
+                  {
+                    "type": "file",
+                    "name": "retry.py"
+                  },
+                  {
+                    "type": "file",
+                    "name": "verifier.py"
+                  }
+                ]
+              },
+              {
+                "type": "file",
+                "name": "__init__.py"
+              }
+            ]
+          },
+          {
+            "type": "file",
+            "name": ".env.example"
+          },
+          {
+            "type": "file",
+            "name": "main.py"
+          },
+          {
+            "type": "file",
+            "name": "README.md"
+          },
+          {
+            "type": "file",
+            "name": "requirements.txt"
+          }
+        ]
+      },
+      {
+        "type": "dir",
+        "name": "task_queue",
+        "children": [
+          {
+            "type": "file",
+            "name": "__init__.py"
+          },
+          {
+            "type": "file",
+            "name": "redis_queue.py"
+          },
+          {
+            "type": "file",
+            "name": "task_queue.py"
+          }
+        ]
+      },
+      {
+        "type": "dir",
+        "name": "tests",
+        "children": [
+          {
+            "type": "dir",
+            "name": "chaos",
+            "children": [
+              {
+                "type": "file",
+                "name": "README.md"
+              }
+            ]
+          },
+          {
+            "type": "dir",
+            "name": "e2e",
+            "children": [
+              {
+                "type": "file",
+                "name": "__init__.py"
+              }
+            ]
+          },
+          {
+            "type": "dir",
+            "name": "integration",
+            "children": [
+              {
+                "type": "file",
+                "name": "__init__.py"
+              },
+              {
+                "type": "file",
+                "name": "test_token_bucket.py"
+              }
+            ]
+          },
+          {
+            "type": "dir",
+            "name": "unit",
+            "children": [
+              {
+                "type": "file",
+                "name": "__init__.py"
+              },
+              {
+                "type": "file",
+                "name": "test_circuit_breaker.py"
+              },
+              {
+                "type": "file",
+                "name": "test_task_service.py"
+              }
+            ]
+          },
+          {
+            "type": "file",
+            "name": "conftest.py"
+          },
+          {
+            "type": "file",
+            "name": "test_agent_loader.py"
+          },
+          {
+            "type": "file",
+            "name": "test_memory_pipeline.py"
+          },
+          {
+            "type": "file",
+            "name": "test_sdk.py"
+          }
+        ]
+      },
+      {
+        "type": "dir",
+        "name": "tools",
+        "children": [
+          {
+            "type": "file",
+            "name": "loader.py"
+          },
+          {
+            "type": "file",
+            "name": "strip_runtime_ddl.py"
+          },
+          {
+            "type": "file",
+            "name": "tool_agent.py"
+          },
+          {
+            "type": "file",
+            "name": "tool_executor.py"
+          }
+        ]
+      },
+      {
+        "type": "dir",
+        "name": "workers",
+        "children": [
+          {
+            "type": "file",
+            "name": "__init__.py"
+          },
+          {
+            "type": "file",
+            "name": "execution_worker.py"
+          },
+          {
+            "type": "file",
+            "name": "guaranteed_loop.py"
+          },
+          {
+            "type": "file",
+            "name": "scheduler_runner.py"
+          },
+          {
+            "type": "file",
+            "name": "simulation_worker.py"
+          },
+          {
+            "type": "file",
+            "name": "worker.py"
+          }
+        ]
+      },
+      {
+        "type": "file",
+        "name": ".dockerignore"
+      },
+      {
+        "type": "file",
+        "name": ".env"
+      },
+      {
+        "type": "file",
+        "name": ".env.example"
+      },
+      {
+        "type": "file",
+        "name": ".gitignore"
+      },
+      {
+        "type": "file",
+        "name": ".python-version"
+      },
+      {
+        "type": "file",
+        "name": "agent_cloud.db"
+      },
+      {
+        "type": "file",
+        "name": "alembic.ini"
+      },
+      {
+        "type": "file",
+        "name": "ARCHITECTURE.md"
+      },
+      {
+        "type": "file",
+        "name": "AUTH_IDENTITY.md"
+      },
+      {
+        "type": "file",
+        "name": "debug-49c6a9.log"
+      },
+      {
+        "type": "file",
+        "name": "docker-compose.production.yml"
+      },
+      {
+        "type": "file",
+        "name": "docker-compose.yml"
+      },
+      {
+        "type": "file",
+        "name": "Dockerfile.api"
+      },
+      {
+        "type": "file",
+        "name": "Dockerfile.scheduler"
+      },
+      {
+        "type": "file",
+        "name": "Dockerfile.worker"
+      },
+      {
+        "type": "file",
+        "name": "Makefile"
+      },
+      {
+        "type": "file",
+        "name": "pyproject.toml"
+      },
+      {
+        "type": "file",
+        "name": "README.md"
+      },
+      {
+        "type": "file",
+        "name": "REFRESH_TOKENS_AND_SESSIONS.md"
+      },
+      {
+        "type": "file",
+        "name": "requirements.in"
+      },
+      {
+        "type": "file",
+        "name": "requirements.txt"
+      },
+      {
+        "type": "file",
+        "name": "RUN.md"
+      },
+      {
+        "type": "file",
+        "name": "run_all.py"
+      },
+      {
+        "type": "file",
+        "name": "run_backend.py"
+      },
+      {
+        "type": "file",
+        "name": "SECURITY_IMPLEMENTATION.md"
+      },
+      {
+        "type": "file",
+        "name": "SECURITY_LAYER2.md"
+      },
+      {
+        "type": "file",
+        "name": "SECURITY_RED_TEAM_REPORT.md"
+      },
+      {
+        "type": "file",
+        "name": "SETUP.md"
+      },
+      {
+        "type": "file",
+        "name": "setup_env.bat"
+      },
+      {
+        "type": "file",
+        "name": "start_agent_cloud.bat"
+      },
+      {
+        "type": "file",
+        "name": "start_api.bat"
+      },
+      {
+        "type": "file",
+        "name": "start_backend.bat"
+      },
+      {
+        "type": "file",
+        "name": "start_scheduler.py"
+      }
+    ]
+  },
+  "generated_by": "scripts/repo_inventory.py",
+  "cwd": "C:\\Users\\harne\\agent-cloud"
+}
