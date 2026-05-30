@@ -3,6 +3,9 @@
 import { useEffect, useState } from "react";
 import { Sidebar } from "@/components/sidebar";
 import { Topbar } from "@/components/topbar";
+import { ApiStatusBar } from "@/components/product/api-status-bar";
+import { FirstSuccessBanner } from "@/components/product/first-success-banner";
+import { PageViewTracker } from "@/components/product/page-view-tracker";
 import { CommandPalette } from "@/components/search/command-palette";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -21,11 +24,16 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <>
+      <PageViewTracker />
       <div className="flex min-h-screen">
         <Sidebar />
         <div className="flex flex-1 flex-col pl-64">
           <Topbar />
-          <main className="flex-1 p-8">{children}</main>
+          <ApiStatusBar />
+          <main className="flex-1 space-y-6 p-8">
+            <FirstSuccessBanner />
+            {children}
+          </main>
         </div>
       </div>
       <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} />

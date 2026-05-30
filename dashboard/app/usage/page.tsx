@@ -1,7 +1,9 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
-import { BarChart3, CreditCard, DollarSign } from "lucide-react";
+import { BarChart3, CreditCard, Gauge } from "lucide-react";
 import {
   BarChart,
   Bar,
@@ -12,14 +14,34 @@ import {
   CartesianGrid,
 } from "recharts";
 import { useDashboard } from "@/hooks/use-dashboard";
+import { fetchBillingSummary } from "@/lib/api";
+import { ProjectGate } from "@/components/product/project-gate";
+import { friendlyApiError } from "@/lib/project-messages";
 import { ApiConnectionBanner } from "@/components/api-connection-banner";
 import { MetricCard } from "@/components/ui/metric-card";
 import { PremiumCard } from "@/components/ui/premium-card";
-import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function UsagePage() {
   const { data, loading, refetch } = useDashboard();
+  const [billing, setBilling] = useState<Awaited<
+    ReturnType<typeof fetchBillingSummary>
+  > | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetchBillingSummary();
+        if (!cancelled) setBilling(res);
+      } catch {
+        if (!cancelled) setBilling(null);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const runsPerAgent = data?.runs_per_agent ?? [];
 
@@ -43,6 +65,7 @@ export default function UsagePage() {
   }));
 
   return (
+    <ProjectGate>
     <div className="space-y-8">
       <ApiConnectionBanner onReady={refetch} />
 
@@ -54,24 +77,45 @@ export default function UsagePage() {
         <h1 className="text-page-title text-foreground tracking-tight">
           Usage & Billing
         </h1>
-        <p className="mt-2 text-body text-foreground-secondary">
-          Cost charts, agent usage, and monthly spending.
+        <p className="mt-2 max-w-2xl text-body text-foreground-secondary">
+          Track executions, retries, and runtime activity for this project. Charts fill in as you run tasks.
         </p>
       </motion.div>
 
+      {billing?.warnings && billing.warnings.length > 0 ? (
+        <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 px-4 py-3 text-sm text-amber-200">
+          {billing.warnings.map((w) => (
+            <p key={w.code}>
+              {w.message}{" "}
+              <Link href="/limits" className="underline text-amber-100">
+                View limits
+              </Link>
+            </p>
+          ))}
+        </div>
+      ) : null}
+
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <MetricCard label="Runs today" value={data?.runs_today ?? 0} />
-        <MetricCard
-          label="Cost today"
-          value={Number(data?.cost_today ?? 0)}
-          format={(n) => `$${n.toFixed(2)}`}
-        />
         <MetricCard
           label="Runs this month"
-          value={data?.monthly_usage?.runs_this_month ?? 0}
+          value={
+            billing?.usage.runs_enqueued ??
+            data?.monthly_usage?.runs_this_month ??
+            0
+          }
         />
         <MetricCard
-          label="Total spend"
+          label="Execution time (min)"
+          value={Math.round(
+            (billing?.usage.execution_time_ms ?? 0) / 60_000
+          )}
+        />
+        <MetricCard
+          label="Retries / DLQ"
+          value={`${billing?.usage.retries ?? 0} / ${billing?.usage.dlq_entries ?? 0}`}
+        />
+        <MetricCard
+          label="Agent cost (est.)"
           value={Number(data?.total_agent_cost ?? 0)}
           format={(n) => `$${n.toFixed(2)}`}
         />
@@ -164,19 +208,37 @@ export default function UsagePage() {
         <div className="space-y-6">
           <PremiumCard>
             <h2 className="text-section-title text-foreground flex items-center gap-2">
-              <CreditCard className="h-5 w-5 text-muted" />
-              Payment methods
+              <Gauge className="h-5 w-5 text-muted" />
+              Plan & quotas
             </h2>
             <p className="mt-0.5 text-body text-foreground-secondary">
-              Manage billing and invoices
+              {billing?.plan.name ?? "Free"} plan · enforcement before scale
             </p>
-            <Button className="mt-6 w-full gap-2 shadow-soft">
-              <DollarSign className="h-4 w-4" />
-              Add payment method
-            </Button>
+            <ul className="mt-4 space-y-2 text-body text-foreground-secondary">
+              <li>
+                Deployments: {billing?.usage.deployments ?? 0} /{" "}
+                {billing?.limits.max_deployments ?? "—"}
+              </li>
+              <li>
+                Storage: {billing?.usage.artifact_storage_mb ?? 0} MB /{" "}
+                {billing?.limits.max_artifact_storage_mb ?? "—"} MB
+              </li>
+              <li>
+                Concurrent: {billing?.usage.concurrent_running ?? 0} /{" "}
+                {billing?.limits.max_concurrent_running ?? "—"}
+              </li>
+            </ul>
+            <Link
+              href="/limits"
+              className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-border bg-elevated px-4 py-2.5 text-sm font-medium text-foreground hover:bg-elevated/80"
+            >
+              <CreditCard className="h-4 w-4" />
+              View limits & warnings
+            </Link>
           </PremiumCard>
         </div>
       </div>
     </div>
+    </ProjectGate>
   );
 }

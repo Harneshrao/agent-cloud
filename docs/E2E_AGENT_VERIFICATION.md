@@ -11,7 +11,7 @@
 `/agents/v2/run` resolves agents via `agent_runtime.loader` (`agents/*/agent.py`, `AgentBase`).
 
 - **`market_research.research_agent`** (from external docs) is **not** registered by the filesystem loader (`get_agent_class` → `None`) → API returns **400 Unknown v2 agent**.
-- Use a registered agent, e.g. **`Competitor Intelligence Agent`** (`agents/competitor_intelligence/agent.py`), with input **`urls`** (list of strings).
+- Use a registered agent: add `agents/<your_agent>/agent.py` exporting a subclass of `AgentBase` (see `agent_runtime.loader`). The old **`Competitor Intelligence Agent`** lived under `archive/agents/competitor_intelligence/` and is no longer discovered by default.
 
 ## 1. Submit task (PowerShell)
 
@@ -21,7 +21,7 @@ $headers = @{
   "X-Project-ID"  = "00000000-0000-4000-8000-000000000002"
 }
 $body = @{
-  agent_name = "Competitor Intelligence Agent"
+  agent_name = "<YourAgentNameFromAgentClass>"
   task_text  = "E2E verify"
   input      = @{ urls = @("https://example.com") }
 } | ConvertTo-Json -Depth 5

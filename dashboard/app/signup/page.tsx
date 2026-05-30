@@ -57,7 +57,7 @@ export default function SignupPage() {
       <AuthCard>
         <div className="text-center">
           <h1 className="text-2xl font-semibold text-primary">Agent Cloud</h1>
-          <p className="mt-2 text-lg text-foreground-secondary">Join the platform</p>
+          <p className="mt-2 text-lg text-black">Join the platform</p>
         </div>
 
         {success ? (
@@ -131,7 +131,7 @@ export default function SignupPage() {
         </form>
         )}
 
-        <p className="mt-6 text-center text-sm text-foreground-secondary">
+        <p className="mt-6 text-center text-sm text-black">
           Already have an account?{" "}
           <Link href="/login" className="font-semibold text-[#0A66C2] hover:underline">
             Sign in

@@ -15,6 +15,13 @@ from starlette.responses import JSONResponse
 from api.security_logger import log_request_body_too_large
 
 MAX_BODY_SIZE = 2 * 1024 * 1024  # 2 MB
+MAX_ARTIFACT_UPLOAD_SIZE = 12 * 1024 * 1024  # 12 MB for deployment ZIP uploads
+
+
+def _max_body_for_path(path: str) -> int:
+    if "/deployments/artifacts/upload" in path:
+        return MAX_ARTIFACT_UPLOAD_SIZE
+    return MAX_BODY_SIZE
 
 
 class BodySizeLimitMiddleware(BaseHTTPMiddleware):
@@ -28,13 +35,13 @@ class BodySizeLimitMiddleware(BaseHTTPMiddleware):
         if content_length is not None:
             try:
                 cl = int(content_length)
-                if cl > MAX_BODY_SIZE:
+                limit = _max_body_for_path(path)
+                if cl > limit:
                     client = request.client.host if request.client else ""
-                    path = request.url.path if request.url else ""
-                    log_request_body_too_large(cl, MAX_BODY_SIZE, client_host=client, path=path)
+                    log_request_body_too_large(cl, limit, client_host=client, path=path)
                     return JSONResponse(
                         status_code=413,
-                        content={"error": "Request entity too large", "detail": f"Body exceeds {MAX_BODY_SIZE} bytes"},
+                        content={"error": "Request entity too large", "detail": f"Body exceeds {limit} bytes"},
                     )
             except ValueError:
                 pass

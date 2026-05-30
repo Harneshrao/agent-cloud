@@ -14,7 +14,7 @@ import uuid
 from typing import Any, Dict, List, Optional
 
 from database.event_triggers import list_enabled_by_event_type
-from task_queue.task_queue import enqueue_task
+from services.task_service import enqueue_task
 
 
 def _render_template(template: str, payload: Dict[str, Any]) -> str:

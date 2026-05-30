@@ -23,7 +23,7 @@ from database.agent_store import get_agent_by_name, list_published_agents, publi
 from registry.agent_registry import agent_registry
 from database.agent_pricing import set_agent_developer
 from engine.quota_checker import check_quota
-from task_queue.task_queue import enqueue_task
+from services.task_service import enqueue_task
 
 
 router = APIRouter(prefix="/agents", tags=["marketplace"])

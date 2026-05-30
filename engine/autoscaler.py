@@ -19,7 +19,7 @@ from typing import Any, Dict, List
 
 from database.workers import count_active_workers
 
-# Redis queue key; must match task_queue.redis_queue / system_api
+# Redis queue key; must match redis_queue_pkg / system_api
 from config.settings import REDIS_QUEUE_READY as TASKS_QUEUE_KEY
 REDIS_URL = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
 ACTIVE_WORKER_THRESHOLD_SEC = 30

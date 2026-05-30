@@ -11,7 +11,7 @@ from api.schemas.task_responses import DemoWorkflowStartResponse
 from database.db import db
 from database.workflow_checkpoints import initialize_workflow
 from database.workflow_nodes import insert_nodes, set_node_task_id
-from task_queue.task_queue import enqueue_task
+from services.task_service import enqueue_task
 
 router = APIRouter(prefix="/demo", tags=["demo"])
 

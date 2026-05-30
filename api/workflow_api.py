@@ -20,7 +20,7 @@ from api.schemas.task_responses import (
 )
 from database.task_graph import get_workflow_view
 from database.db import db
-from task_queue.task_queue import enqueue_task
+from services.task_service import enqueue_task
 from database.workflow_nodes import get_nodes
 from database.workflow_checkpoints import get_all_checkpoints
 from engine.stream_store import get_events

@@ -178,6 +178,22 @@ def update_agent_configuration(installation_id: int, configuration: Dict[str, An
     return cur.rowcount > 0
 
 
+def set_installation_status(installation_id: int, status: str) -> bool:
+    """Update lifecycle status (`active`, `suspended`, `rolled_back`). Returns True if a row changed."""
+    allowed = frozenset({"active", "suspended", "rolled_back", "pending"})
+    if status not in allowed:
+        raise ValueError(f"invalid status: {status}")
+    _ensure_schema()
+    conn = db.get_connection()
+    cur = conn.cursor()
+    cur.execute(
+        "UPDATE agent_installations SET status = ? WHERE installation_id = ?",
+        (status, installation_id),
+    )
+    conn.commit()
+    return cur.rowcount > 0
+
+
 def validate_configuration(agent_name: str, configuration: Dict[str, Any]) -> tuple[bool, Optional[str]]:
     """
     Validate configuration against agent input_schema. Return (valid, error_message).

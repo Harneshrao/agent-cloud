@@ -71,7 +71,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
             type: "workflow",
             label,
             subtitle: subtitle.slice(0, 60),
-            href: `/workflows/${t.id}`,
+            href: "/runs",
           });
         }
       });
@@ -96,7 +96,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
             type: "schedule",
             label: label,
             subtitle: s.cron_expression,
-            href: "/schedules",
+            href: "/deployments",
           });
         }
       });

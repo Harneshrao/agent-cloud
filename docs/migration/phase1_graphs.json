@@ -1,0 +1,1216 @@
+{
+  "folder_dependency_hints": {
+    ".": [
+      "sqlalchemy"
+    ],
+    "agent_cloud/app/api": [
+      "agent_cloud",
+      "api",
+      "fastapi"
+    ],
+    "agent_cloud/app/api/v1": [
+      "agent_cloud",
+      "fastapi"
+    ],
+    "agent_cloud/app/api/v1/routes": [
+      "agent_cloud",
+      "api",
+      "fastapi"
+    ],
+    "agent_cloud/app/workers": [
+      "agent_cloud",
+      "workers"
+    ],
+    "agent_cloud/contracts/api": [
+      "agent_cloud",
+      "pydantic"
+    ],
+    "agent_cloud/contracts/dto": [
+      "agent_cloud",
+      "pydantic"
+    ],
+    "agent_cloud/core/agents": [
+      "agent_cloud"
+    ],
+    "agent_cloud/core/resilience": [
+      "agent_cloud"
+    ],
+    "agent_cloud/core/tasks": [
+      "agent_cloud"
+    ],
+    "agent_cloud/execution/scheduler": [
+      "agent_cloud"
+    ],
+    "agent_cloud/execution/worker": [
+      "agent_cloud",
+      "workers"
+    ],
+    "agent_cloud/infra/config": [
+      "config"
+    ],
+    "agent_cloud/infra/db": [
+      "database",
+      "sqlalchemy"
+    ],
+    "agent_cloud/infra/db/repositories": [
+      "agent_cloud",
+      "database",
+      "sqlalchemy"
+    ],
+    "agent_cloud/infra/observability": [
+      "agent_cloud"
+    ],
+    "agent_cloud/infra/redis": [
+      "agent_cloud",
+      "config",
+      "redis",
+      "redis_queue_pkg"
+    ],
+    "agent_runtime": [
+      "agent_runtime",
+      "database",
+      "engine"
+    ],
+    "alembic": [
+      "config",
+      "database",
+      "sqlalchemy"
+    ],
+    "alembic/versions": [
+      "sqlalchemy"
+    ],
+    "api": [
+      "agent_runtime",
+      "api",
+      "config",
+      "database",
+      "engine",
+      "fastapi",
+      "pydantic",
+      "redis",
+      "sqlalchemy"
+    ],
+    "api/middleware": [
+      "agent_cloud",
+      "config",
+      "fastapi",
+      "redis"
+    ],
+    "api/schemas": [
+      "api",
+      "pydantic"
+    ],
+    "app/api": [
+      "api"
+    ],
+    "app/workers": [
+      "workers"
+    ],
+    "archive/solana_agent": [
+      "fastapi"
+    ],
+    "archive/solana_agent/app/api": [
+      "fastapi",
+      "pydantic",
+      "sqlalchemy"
+    ],
+    "archive/solana_agent/app/core": [
+      "sqlalchemy"
+    ],
+    "archive/solana_agent/app/models": [
+      "sqlalchemy"
+    ],
+    "archive/solana_agent/app/services": [
+      "sqlalchemy"
+    ],
+    "archive/solana_agent/app/utils": [
+      "fastapi"
+    ],
+    "automation_packages": [
+      "database"
+    ],
+    "config": [
+      "config"
+    ],
+    "database": [
+      "config",
+      "database",
+      "engine",
+      "sqlalchemy"
+    ],
+    "engine": [
+      "api",
+      "config",
+      "database",
+      "engine",
+      "redis"
+    ],
+    "execution": [
+      "database",
+      "redis_queue_pkg"
+    ],
+    "orchestrator": [
+      "agent_runtime",
+      "database",
+      "engine",
+      "orchestrator"
+    ],
+    "redis_queue_pkg": [
+      "config",
+      "redis"
+    ],
+    "registry": [
+      "database"
+    ],
+    "scheduler": [
+      "database",
+      "redis_queue_pkg"
+    ],
+    "scripts": [
+      "database"
+    ],
+    "sdk": [
+      "database",
+      "engine"
+    ],
+    "services": [
+      "config",
+      "database",
+      "engine",
+      "redis_queue_pkg",
+      "services"
+    ],
+    "task_queue": [
+      "redis_queue_pkg",
+      "services"
+    ],
+    "tests/integration": [
+      "agent_cloud",
+      "config",
+      "redis"
+    ],
+    "tests/migration": [
+      "api",
+      "fastapi"
+    ],
+    "tests/unit": [
+      "agent_cloud"
+    ],
+    "workers": [
+      "agent_cloud",
+      "agent_runtime",
+      "database",
+      "engine",
+      "orchestrator",
+      "redis_queue_pkg",
+      "services"
+    ]
+  },
+  "openapi": {
+    "app": "api.main:app",
+    "route_count": 132,
+    "routes": [
+      {
+        "method": "GET",
+        "path": "/",
+        "name": "root",
+        "tags": "",
+        "deps": "root"
+      },
+      {
+        "method": "GET",
+        "path": "/agent-instances",
+        "name": "get_instances",
+        "tags": "agent-instances",
+        "deps": "get_instances;require_project_context;get_current_user;require_project_id"
+      },
+      {
+        "method": "POST",
+        "path": "/agent-instances",
+        "name": "post_create_instance",
+        "tags": "agent-instances",
+        "deps": "post_create_instance;require_project_context;get_current_user;require_project_id"
+      },
+      {
+        "method": "GET",
+        "path": "/agent-instances/{instance_id}",
+        "name": "get_instance_by_id",
+        "tags": "agent-instances",
+        "deps": "get_instance_by_id;require_project_context;get_current_user;require_project_id"
+      },
+      {
+        "method": "POST",
+        "path": "/agent-instances/{instance_id}/autonomous-cycle",
+        "name": "post_instance_autonomous_cycle",
+        "tags": "agent-instances",
+        "deps": "post_instance_autonomous_cycle;require_project_context;get_current_user;require_project_id"
+      },
+      {
+        "method": "POST",
+        "path": "/agent-instances/{instance_id}/run",
+        "name": "post_instance_run",
+        "tags": "agent-instances",
+        "deps": "post_instance_run;require_project_context;get_current_user;require_project_id"
+      },
+      {
+        "method": "PATCH",
+        "path": "/agent-instances/{instance_id}/state",
+        "name": "patch_instance_state",
+        "tags": "agent-instances",
+        "deps": "patch_instance_state;require_project_context;get_current_user;require_project_id"
+      },
+      {
+        "method": "POST",
+        "path": "/agent/run",
+        "name": "agent_run_alias",
+        "tags": "marketplace",
+        "deps": "agent_run_alias;require_project_context;get_current_user;require_project_id"
+      },
+      {
+        "method": "GET",
+        "path": "/agents",
+        "name": "list_agents",
+        "tags": "",
+        "deps": "list_agents"
+      },
+      {
+        "method": "GET",
+        "path": "/agents/installations",
+        "name": "list_installations",
+        "tags": "agents-installations",
+        "deps": "list_installations;require_project_context;get_current_user;require_project_id"
+      },
+      {
+        "method": "POST",
+        "path": "/agents/installations",
+        "name": "install",
+        "tags": "agents-installations",
+        "deps": "install;require_project_context;get_current_user;require_project_id"
+      },
+      {
+        "method": "PATCH",
+        "path": "/agents/installations/schedules/{schedule_id}",
+        "name": "update_schedule",
+        "tags": "agents-installations",
+        "deps": "update_schedule;require_project_context;get_current_user;require_project_id"
+      },
+      {
+        "method": "GET",
+        "path": "/agents/installations/{installation_id}",
+        "name": "get_installation_detail",
+        "tags": "agents-installations",
+        "deps": "get_installation_detail;require_project_context;get_current_user;require_project_id"
+      },
+      {
+        "method": "PATCH",
+        "path": "/agents/installations/{installation_id}/configuration",
+        "name": "update_configuration",
+        "tags": "agents-installations",
+        "deps": "update_configuration;require_project_context;get_current_user;require_project_id"
+      },
+      {
+        "method": "POST",
+        "path": "/agents/installations/{installation_id}/run",
+        "name": "run_agent",
+        "tags": "agents-installations",
+        "deps": "run_agent;require_project_context;get_current_user;require_project_id"
+      },
+      {
+        "method": "GET",
+        "path": "/agents/installations/{installation_id}/runs",
+        "name": "list_runs",
+        "tags": "agents-installations",
+        "deps": "list_runs;require_project_context;get_current_user;require_project_id"
+      },
+      {
+        "method": "GET",
+        "path": "/agents/installations/{installation_id}/schedules",
+        "name": "list_schedules_for_installation",
+        "tags": "agents-installations",
+        "deps": "list_schedules_for_installation;require_project_context;get_current_user;require_project_id"
+      },
+      {
+        "method": "POST",
+        "path": "/agents/installations/{installation_id}/schedules",
+        "name": "create_schedule_for_installation",
+        "tags": "agents-installations",
+        "deps": "create_schedule_for_installation;require_project_context;get_current_user;require_project_id"
+      },
+      {
+        "method": "POST",
+        "path": "/agents/publish",
+        "name": "agents_publish",
+        "tags": "marketplace",
+        "deps": "agents_publish;get_current_user_optional"
+      },
+      {
+        "method": "POST",
+        "path": "/agents/register",
+        "name": "register_agent",
+        "tags": "",
+        "deps": "register_agent"
+      },
+      {
+        "method": "POST",
+        "path": "/agents/run",
+        "name": "agents_run",
+        "tags": "marketplace",
+        "deps": "agents_run;require_project_context;get_current_user;require_project_id"
+      },
+      {
+        "method": "GET",
+        "path": "/agents/store",
+        "name": "agents_store",
+        "tags": "marketplace",
+        "deps": "agents_store"
+      },
+      {
+        "method": "GET",
+        "path": "/agents/top",
+        "name": "agents_top",
+        "tags": "marketplace-ecosystem",
+        "deps": "agents_top"
+      },
+      {
+        "method": "GET",
+        "path": "/agents/trending",
+        "name": "agents_trending",
+        "tags": "marketplace-ecosystem",
+        "deps": "agents_trending"
+      },
+      {
+        "method": "POST",
+        "path": "/agents/v2/run",
+        "name": "run_v2_agent",
+        "tags": "agents-v2",
+        "deps": "run_v2_agent;require_project_can_run;require_project_context;get_current_user;require_project_id"
+      },
+      {
+        "method": "GET",
+        "path": "/agents/{name}/latest",
+        "name": "agents_latest",
+        "tags": "marketplace",
+        "deps": "agents_latest"
+      },
+      {
+        "method": "POST",
+        "path": "/agents/{name}/rate",
+        "name": "agents_rate",
+        "tags": "marketplace-ecosystem",
+        "deps": "agents_rate;require_project_context;get_current_user;require_project_id"
+      },
+      {
+        "method": "GET",
+        "path": "/agents/{name}/ratings",
+        "name": "agents_ratings",
+        "tags": "marketplace-ecosystem",
+        "deps": "agents_ratings"
+      },
+      {
+        "method": "GET",
+        "path": "/api-keys",
+        "name": "get_api_keys",
+        "tags": "api-keys",
+        "deps": "get_api_keys;get_current_user"
+      },
+      {
+        "method": "POST",
+        "path": "/api-keys",
+        "name": "post_create_key",
+        "tags": "api-keys",
+        "deps": "post_create_key;get_current_user"
+      },
+      {
+        "method": "DELETE",
+        "path": "/api-keys/{key_id}",
+        "name": "delete_api_key",
+        "tags": "api-keys",
+        "deps": "delete_api_key;get_current_user"
+      },
+      {
+        "method": "GET",
+        "path": "/autonomous/policies",
+        "name": "list_policies",
+        "tags": "autonomous-policies",
+        "deps": "list_policies;require_project_context;get_current_user;require_project_id"
+      },
+      {
+        "method": "POST",
+        "path": "/autonomous/policies",
+        "name": "post_set_policy",
+        "tags": "autonomous-policies",
+        "deps": "post_set_policy;require_project_context;get_current_user;require_project_id"
+      },
+      {
+        "method": "GET",
+        "path": "/autonomous/policies/{agent_name}",
+        "name": "get_agent_policy",
+        "tags": "autonomous-policies",
+        "deps": "get_agent_policy;require_project_context;get_current_user;require_project_id"
+      },
+      {
+        "method": "GET",
+        "path": "/dashboard",
+        "name": "get_dashboard",
+        "tags": "dashboard",
+        "deps": "get_dashboard;require_project_context;get_current_user;require_project_id"
+      },
+      {
+        "method": "POST",
+        "path": "/demo/run",
+        "name": "post_demo_run",
+        "tags": "demo",
+        "deps": "post_demo_run;require_project_can_run;require_project_context;get_current_user;require_project_id"
+      },
+      {
+        "method": "GET",
+        "path": "/developers/agents",
+        "name": "developers_agents",
+        "tags": "developers",
+        "deps": "developers_agents"
+      },
+      {
+        "method": "POST",
+        "path": "/developers/agents",
+        "name": "post_publish_agent",
+        "tags": "developer-economy",
+        "deps": "post_publish_agent;get_current_user"
+      },
+      {
+        "method": "POST",
+        "path": "/developers/agents/publish",
+        "name": "post_publish_agent_with_package",
+        "tags": "developer-economy",
+        "deps": "post_publish_agent_with_package;get_current_user"
+      },
+      {
+        "method": "GET",
+        "path": "/developers/agents/{agent_id}/fraud-signals",
+        "name": "get_agent_fraud_signals",
+        "tags": "developer-economy",
+        "deps": "get_agent_fraud_signals;require_admin;get_current_user"
+      },
+      {
+        "method": "GET",
+        "path": "/developers/agents/{agent_id}/sandbox",
+        "name": "get_agent_sandbox",
+        "tags": "developer-economy",
+        "deps": "get_agent_sandbox;get_current_user"
+      },
+      {
+        "method": "PUT",
+        "path": "/developers/agents/{agent_id}/sandbox",
+        "name": "put_agent_sandbox",
+        "tags": "developer-economy",
+        "deps": "put_agent_sandbox;get_current_user"
+      },
+      {
+        "method": "POST",
+        "path": "/developers/agents/{agent_id}/submit-review",
+        "name": "post_submit_for_review",
+        "tags": "developer-economy",
+        "deps": "post_submit_for_review;get_current_user"
+      },
+      {
+        "method": "GET",
+        "path": "/developers/agents/{agent_id}/trust",
+        "name": "get_agent_trust",
+        "tags": "developer-economy",
+        "deps": "get_agent_trust;get_current_user"
+      },
+      {
+        "method": "POST",
+        "path": "/developers/agents/{agent_id}/upload",
+        "name": "post_agent_upload",
+        "tags": "developer-economy",
+        "deps": "post_agent_upload;get_current_user"
+      },
+      {
+        "method": "GET",
+        "path": "/developers/agents/{agent_id}/verification",
+        "name": "get_agent_verification",
+        "tags": "developer-economy",
+        "deps": "get_agent_verification;get_current_user"
+      },
+      {
+        "method": "PUT",
+        "path": "/developers/agents/{agent_id}/verification",
+        "name": "put_agent_verification",
+        "tags": "developer-economy",
+        "deps": "put_agent_verification;require_admin;get_current_user"
+      },
+      {
+        "method": "POST",
+        "path": "/developers/agents/{agent_id}/versions",
+        "name": "post_agent_version",
+        "tags": "developer-economy",
+        "deps": "post_agent_version;get_current_user"
+      },
+      {
+        "method": "GET",
+        "path": "/developers/agents/{agent_name}/stats",
+        "name": "developers_agent_stats",
+        "tags": "developers",
+        "deps": "developers_agent_stats;get_current_user"
+      },
+      {
+        "method": "GET",
+        "path": "/developers/dashboard",
+        "name": "developers_dashboard",
+        "tags": "developers",
+        "deps": "developers_dashboard;get_current_user"
+      },
+      {
+        "method": "GET",
+        "path": "/developers/dashboard",
+        "name": "get_dashboard",
+        "tags": "developer-economy",
+        "deps": "get_dashboard;get_current_user"
+      },
+      {
+        "method": "GET",
+        "path": "/developers/earnings",
+        "name": "get_earnings",
+        "tags": "developer-economy",
+        "deps": "get_earnings;get_current_user"
+      },
+      {
+        "method": "GET",
+        "path": "/developers/my-agents",
+        "name": "get_my_agents",
+        "tags": "developer-economy",
+        "deps": "get_my_agents;get_current_user"
+      },
+      {
+        "method": "GET",
+        "path": "/developers/payouts",
+        "name": "get_payouts",
+        "tags": "developer-economy",
+        "deps": "get_payouts;get_current_user"
+      },
+      {
+        "method": "GET",
+        "path": "/developers/profile",
+        "name": "get_my_profile",
+        "tags": "developer-economy",
+        "deps": "get_my_profile;get_current_user"
+      },
+      {
+        "method": "POST",
+        "path": "/developers/register",
+        "name": "post_register",
+        "tags": "developer-economy",
+        "deps": "post_register;get_current_user"
+      },
+      {
+        "method": "GET",
+        "path": "/developers/revenue",
+        "name": "developers_revenue",
+        "tags": "developers",
+        "deps": "developers_revenue;get_current_user"
+      },
+      {
+        "method": "GET",
+        "path": "/docs",
+        "name": "swagger_ui_html",
+        "tags": "",
+        "deps": ""
+      },
+      {
+        "method": "GET",
+        "path": "/docs/oauth2-redirect",
+        "name": "swagger_ui_redirect",
+        "tags": "",
+        "deps": ""
+      },
+      {
+        "method": "POST",
+        "path": "/events",
+        "name": "ingest_event",
+        "tags": "events",
+        "deps": "ingest_event;require_project_context;get_current_user;require_project_id"
+      },
+      {
+        "method": "GET",
+        "path": "/events/triggers",
+        "name": "list_triggers",
+        "tags": "events",
+        "deps": "list_triggers;require_project_context;get_current_user;require_project_id"
+      },
+      {
+        "method": "POST",
+        "path": "/events/triggers",
+        "name": "create_trigger",
+        "tags": "events",
+        "deps": "create_trigger;require_project_context;get_current_user;require_project_id"
+      },
+      {
+        "method": "DELETE",
+        "path": "/events/triggers/{trigger_id}",
+        "name": "disable_trigger",
+        "tags": "events",
+        "deps": "disable_trigger;require_project_context;get_current_user;require_project_id"
+      },
+      {
+        "method": "GET",
+        "path": "/health",
+        "name": "health",
+        "tags": "",
+        "deps": "health"
+      },
+      {
+        "method": "POST",
+        "path": "/login",
+        "name": "login",
+        "tags": "auth",
+        "deps": "login"
+      },
+      {
+        "method": "GET",
+        "path": "/marketplace/agents",
+        "name": "list_marketplace_agents",
+        "tags": "marketplace",
+        "deps": "list_marketplace_agents"
+      },
+      {
+        "method": "GET",
+        "path": "/marketplace/recommendations",
+        "name": "get_recommendations",
+        "tags": "marketplace",
+        "deps": "get_recommendations"
+      },
+      {
+        "method": "GET",
+        "path": "/marketplace/search",
+        "name": "search_marketplace",
+        "tags": "marketplace",
+        "deps": "search_marketplace"
+      },
+      {
+        "method": "GET",
+        "path": "/me",
+        "name": "me",
+        "tags": "auth",
+        "deps": "me;get_current_user"
+      },
+      {
+        "method": "GET",
+        "path": "/openapi.json",
+        "name": "openapi",
+        "tags": "",
+        "deps": ""
+      },
+      {
+        "method": "GET",
+        "path": "/packages",
+        "name": "list_packages",
+        "tags": "packages",
+        "deps": "list_packages"
+      },
+      {
+        "method": "GET",
+        "path": "/packages/marketplace",
+        "name": "packages_marketplace",
+        "tags": "packages",
+        "deps": "packages_marketplace"
+      },
+      {
+        "method": "GET",
+        "path": "/packages/trending",
+        "name": "packages_trending",
+        "tags": "packages",
+        "deps": "packages_trending"
+      },
+      {
+        "method": "GET",
+        "path": "/packages/{name}",
+        "name": "get_package",
+        "tags": "packages",
+        "deps": "get_package"
+      },
+      {
+        "method": "POST",
+        "path": "/packages/{name}/install",
+        "name": "install_package_endpoint",
+        "tags": "packages",
+        "deps": "install_package_endpoint;get_current_user"
+      },
+      {
+        "method": "GET",
+        "path": "/plans",
+        "name": "get_plans",
+        "tags": "plans",
+        "deps": "get_plans;get_current_user"
+      },
+      {
+        "method": "GET",
+        "path": "/projects",
+        "name": "list_projects",
+        "tags": "projects",
+        "deps": "list_projects;get_current_user"
+      },
+      {
+        "method": "POST",
+        "path": "/projects",
+        "name": "create_project",
+        "tags": "projects",
+        "deps": "create_project;get_current_user"
+      },
+      {
+        "method": "GET",
+        "path": "/projects/{project_id}/templates",
+        "name": "list_project_templates",
+        "tags": "projects",
+        "deps": "list_project_templates;get_current_user"
+      },
+      {
+        "method": "GET",
+        "path": "/redoc",
+        "name": "redoc_html",
+        "tags": "",
+        "deps": ""
+      },
+      {
+        "method": "POST",
+        "path": "/register",
+        "name": "register",
+        "tags": "auth",
+        "deps": "register"
+      },
+      {
+        "method": "GET",
+        "path": "/schedule",
+        "name": "list_schedules",
+        "tags": "scheduler",
+        "deps": "list_schedules;require_project_context;get_current_user;require_project_id"
+      },
+      {
+        "method": "POST",
+        "path": "/schedule",
+        "name": "create_schedule",
+        "tags": "scheduler",
+        "deps": "create_schedule;require_project_context;get_current_user;require_project_id"
+      },
+      {
+        "method": "DELETE",
+        "path": "/schedule/{schedule_id}",
+        "name": "disable_schedule",
+        "tags": "scheduler",
+        "deps": "disable_schedule;require_project_context;get_current_user;require_project_id"
+      },
+      {
+        "method": "GET",
+        "path": "/scheduler/task",
+        "name": "scheduler_get_task",
+        "tags": "task-scheduler",
+        "deps": "scheduler_get_task"
+      },
+      {
+        "method": "PATCH",
+        "path": "/schedules/{schedule_id}",
+        "name": "patch_schedule",
+        "tags": "schedules",
+        "deps": "patch_schedule;require_project_context;get_current_user;require_project_id"
+      },
+      {
+        "method": "GET",
+        "path": "/simulations",
+        "name": "list_runs",
+        "tags": "simulations",
+        "deps": "list_runs;require_project_context;get_current_user;require_project_id"
+      },
+      {
+        "method": "POST",
+        "path": "/simulations",
+        "name": "create",
+        "tags": "simulations",
+        "deps": "create;require_project_context;get_current_user;require_project_id"
+      },
+      {
+        "method": "GET",
+        "path": "/simulations/{simulation_id}",
+        "name": "get_run",
+        "tags": "simulations",
+        "deps": "get_run;require_project_context;get_current_user;require_project_id"
+      },
+      {
+        "method": "GET",
+        "path": "/simulations/{simulation_id}/events",
+        "name": "list_events",
+        "tags": "simulations",
+        "deps": "list_events;require_project_context;get_current_user;require_project_id"
+      },
+      {
+        "method": "POST",
+        "path": "/simulations/{simulation_id}/events",
+        "name": "inject",
+        "tags": "simulations",
+        "deps": "inject;require_project_context;get_current_user;require_project_id"
+      },
+      {
+        "method": "POST",
+        "path": "/simulations/{simulation_id}/process-events",
+        "name": "process_events",
+        "tags": "simulations",
+        "deps": "process_events;require_project_context;get_current_user;require_project_id"
+      },
+      {
+        "method": "POST",
+        "path": "/simulations/{simulation_id}/start",
+        "name": "start",
+        "tags": "simulations",
+        "deps": "start;require_project_context;get_current_user;require_project_id"
+      },
+      {
+        "method": "GET",
+        "path": "/system/alerts",
+        "name": "get_system_alerts",
+        "tags": "system",
+        "deps": "get_system_alerts"
+      },
+      {
+        "method": "GET",
+        "path": "/system/autoscaler",
+        "name": "get_system_autoscaler",
+        "tags": "system",
+        "deps": "get_system_autoscaler;require_admin;get_current_user"
+      },
+      {
+        "method": "GET",
+        "path": "/system/containers",
+        "name": "get_system_containers",
+        "tags": "system",
+        "deps": "get_system_containers;require_admin;get_current_user"
+      },
+      {
+        "method": "GET",
+        "path": "/system/dead_letters",
+        "name": "get_system_dead_letters",
+        "tags": "system",
+        "deps": "get_system_dead_letters;require_admin;get_current_user"
+      },
+      {
+        "method": "GET",
+        "path": "/system/health",
+        "name": "get_system_health",
+        "tags": "system",
+        "deps": "get_system_health;require_admin;get_current_user"
+      },
+      {
+        "method": "GET",
+        "path": "/system/health",
+        "name": "get_system_health",
+        "tags": "system",
+        "deps": "get_system_health;require_admin;get_current_user"
+      },
+      {
+        "method": "GET",
+        "path": "/system/metrics",
+        "name": "get_system_metrics",
+        "tags": "system",
+        "deps": "get_system_metrics;require_admin;get_current_user"
+      },
+      {
+        "method": "GET",
+        "path": "/system/queue",
+        "name": "get_system_queue",
+        "tags": "system",
+        "deps": "get_system_queue;require_admin;get_current_user"
+      },
+      {
+        "method": "GET",
+        "path": "/system/recovery",
+        "name": "get_system_recovery",
+        "tags": "system",
+        "deps": "get_system_recovery;require_admin;get_current_user"
+      },
+      {
+        "method": "GET",
+        "path": "/system/workers",
+        "name": "get_system_workers",
+        "tags": "system",
+        "deps": "get_system_workers;require_admin;get_current_user"
+      },
+      {
+        "method": "GET",
+        "path": "/teams",
+        "name": "list_teams",
+        "tags": "teams",
+        "deps": "list_teams;get_current_user"
+      },
+      {
+        "method": "POST",
+        "path": "/teams",
+        "name": "create_team",
+        "tags": "teams",
+        "deps": "create_team;get_current_user"
+      },
+      {
+        "method": "GET",
+        "path": "/templates",
+        "name": "get_templates",
+        "tags": "templates",
+        "deps": "get_templates"
+      },
+      {
+        "method": "POST",
+        "path": "/templates",
+        "name": "post_templates",
+        "tags": "templates",
+        "deps": "post_templates;get_current_user"
+      },
+      {
+        "method": "GET",
+        "path": "/templates/marketplace",
+        "name": "templates_marketplace",
+        "tags": "templates",
+        "deps": "templates_marketplace"
+      },
+      {
+        "method": "GET",
+        "path": "/templates/public",
+        "name": "templates_public",
+        "tags": "templates",
+        "deps": "templates_public"
+      },
+      {
+        "method": "GET",
+        "path": "/templates/top",
+        "name": "templates_top",
+        "tags": "templates",
+        "deps": "templates_top"
+      },
+      {
+        "method": "GET",
+        "path": "/templates/trending",
+        "name": "templates_trending",
+        "tags": "templates",
+        "deps": "templates_trending"
+      },
+      {
+        "method": "GET",
+        "path": "/templates/{template_id}",
+        "name": "get_template",
+        "tags": "templates",
+        "deps": "get_template"
+      },
+      {
+        "method": "POST",
+        "path": "/templates/{template_id}/approve",
+        "name": "post_template_approve",
+        "tags": "templates",
+        "deps": "post_template_approve;get_current_user"
+      },
+      {
+        "method": "POST",
+        "path": "/templates/{template_id}/fork",
+        "name": "post_template_fork",
+        "tags": "templates",
+        "deps": "post_template_fork;get_current_user"
+      },
+      {
+        "method": "DELETE",
+        "path": "/templates/{template_id}/install",
+        "name": "delete_template_install",
+        "tags": "templates",
+        "deps": "delete_template_install;require_project_context;get_current_user;require_project_id"
+      },
+      {
+        "method": "POST",
+        "path": "/templates/{template_id}/install",
+        "name": "post_template_install",
+        "tags": "templates",
+        "deps": "post_template_install;require_project_context;get_current_user;require_project_id"
+      },
+      {
+        "method": "POST",
+        "path": "/templates/{template_id}/publish",
+        "name": "post_template_publish",
+        "tags": "templates",
+        "deps": "post_template_publish;get_current_user"
+      },
+      {
+        "method": "POST",
+        "path": "/templates/{template_id}/rate",
+        "name": "post_template_rate",
+        "tags": "templates",
+        "deps": "post_template_rate;require_project_context;get_current_user;require_project_id"
+      },
+      {
+        "method": "GET",
+        "path": "/templates/{template_id}/ratings",
+        "name": "get_template_ratings",
+        "tags": "templates",
+        "deps": "get_template_ratings"
+      },
+      {
+        "method": "POST",
+        "path": "/templates/{template_id}/run",
+        "name": "post_template_run",
+        "tags": "templates",
+        "deps": "post_template_run;require_project_context;get_current_user;require_project_id"
+      },
+      {
+        "method": "GET",
+        "path": "/usage",
+        "name": "get_usage",
+        "tags": "usage",
+        "deps": "get_usage;require_project_context;get_current_user;require_project_id"
+      },
+      {
+        "method": "POST",
+        "path": "/war-room/analyze",
+        "name": "war_room",
+        "tags": "",
+        "deps": "war_room"
+      },
+      {
+        "method": "POST",
+        "path": "/webhooks/{source}",
+        "name": "ingest_webhook",
+        "tags": "webhooks",
+        "deps": "ingest_webhook"
+      },
+      {
+        "method": "GET",
+        "path": "/workflows/analytics/aggregate",
+        "name": "get_workflow_aggregate_analytics",
+        "tags": "workflows",
+        "deps": "get_workflow_aggregate_analytics;require_project_context;get_current_user;require_project_id"
+      },
+      {
+        "method": "GET",
+        "path": "/workflows/analytics/run/{workflow_id}",
+        "name": "get_workflow_run_analytics",
+        "tags": "workflows",
+        "deps": "get_workflow_run_analytics;require_project_context;get_current_user;require_project_id"
+      },
+      {
+        "method": "POST",
+        "path": "/workflows/demo",
+        "name": "post_demo_workflow",
+        "tags": "workflows",
+        "deps": "post_demo_workflow;require_project_can_run;require_project_context;get_current_user;require_project_id"
+      },
+      {
+        "method": "POST",
+        "path": "/workflows/optimization/apply",
+        "name": "post_workflow_optimization_apply",
+        "tags": "workflows",
+        "deps": "post_workflow_optimization_apply;require_project_context;get_current_user;require_project_id"
+      },
+      {
+        "method": "GET",
+        "path": "/workflows/optimization/recommendations",
+        "name": "get_workflow_recommendations",
+        "tags": "workflows",
+        "deps": "get_workflow_recommendations;require_project_context;get_current_user;require_project_id"
+      },
+      {
+        "method": "GET",
+        "path": "/workflows/optimization/slow-nodes",
+        "name": "get_workflow_slow_nodes",
+        "tags": "workflows",
+        "deps": "get_workflow_slow_nodes;require_project_context;get_current_user;require_project_id"
+      },
+      {
+        "method": "GET",
+        "path": "/workflows/optimization/summary",
+        "name": "get_workflow_optimization_summary",
+        "tags": "workflows",
+        "deps": "get_workflow_optimization_summary;require_project_context;get_current_user;require_project_id"
+      },
+      {
+        "method": "GET",
+        "path": "/workflows/{task_id}",
+        "name": "get_workflow",
+        "tags": "workflows",
+        "deps": "get_workflow;require_project_context;get_current_user;require_project_id"
+      },
+      {
+        "method": "POST",
+        "path": "/workflows/{workflow_id}/resume",
+        "name": "post_workflow_resume",
+        "tags": "workflows",
+        "deps": "post_workflow_resume;require_project_context;get_current_user;require_project_id"
+      }
+    ]
+  },
+  "database_models": {
+    "models_py": [
+      {
+        "class": "User",
+        "table": "users"
+      },
+      {
+        "class": "Project",
+        "table": "projects"
+      },
+      {
+        "class": "ProjectMember",
+        "table": "project_members"
+      },
+      {
+        "class": "Task",
+        "table": "tasks"
+      },
+      {
+        "class": "TaskEvent",
+        "table": "task_events"
+      },
+      {
+        "class": "DeadLetterQueue",
+        "table": "dead_letter_queue"
+      },
+      {
+        "class": "RateLimit",
+        "table": "rate_limits"
+      },
+      {
+        "class": "TaskLog",
+        "table": "task_logs"
+      },
+      {
+        "class": "AgentRun",
+        "table": "agent_runs"
+      },
+      {
+        "class": "Result",
+        "table": "results"
+      },
+      {
+        "class": "WorkflowNode",
+        "table": "workflow_nodes"
+      },
+      {
+        "class": "WorkflowCheckpoint",
+        "table": "workflow_checkpoints"
+      },
+      {
+        "class": "UsageRecord",
+        "table": "usage_records"
+      },
+      {
+        "class": "AgentRunResult",
+        "table": "agent_run_results"
+      },
+      {
+        "class": "Plan",
+        "table": "plans"
+      },
+      {
+        "class": "ProjectPlan",
+        "table": "project_plans"
+      },
+      {
+        "class": "DeadLetterTask",
+        "table": "dead_letter_tasks"
+      },
+      {
+        "class": "TaskRetry",
+        "table": "task_retries"
+      }
+    ]
+  },
+  "note": "Import graph is first-party top-level hints only; not a full symbol graph."
+}

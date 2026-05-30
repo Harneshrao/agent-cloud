@@ -8,6 +8,8 @@ from pydantic import BaseModel
 from api.jwt_handler import create_access_token, decode_token
 from api.security import hash_password, validate_password, verify_password
 from config.settings import DEFAULT_USER_UUID
+from database.api_keys import PREFIX as API_KEY_PREFIX
+from database.api_keys import get_user_by_key
 from database.users import create_user, get_user_by_email, get_user_by_id
 
 router = APIRouter(tags=["auth"])
@@ -55,6 +57,12 @@ def register(data: RegisterRequest) -> Dict[str, Any]:
 
     password_hash = hash_password(password)
     user = create_user(data.name.strip(), email, password_hash)
+    try:
+        from services.product_analytics import track_signup
+
+        track_signup(user["id"], email=email)
+    except Exception:
+        pass
 
     return {"id": user["id"], "email": user["email"]}
 
@@ -68,6 +76,12 @@ def login(data: LoginRequest) -> Dict[str, Any]:
     if user is None or not verify_password(password, user["password_hash"]):
         raise HTTPException(status_code=401, detail="Invalid email or password")
 
+    try:
+        from services.product_analytics import track_login
+
+        track_login(user["id"])
+    except Exception:
+        pass
     token = create_access_token(user["id"])
     return {"access_token": token, "token_type": "bearer"}
 
@@ -88,6 +102,12 @@ def get_current_user(
     token = authorization.removeprefix("Bearer ").strip()
     if not token:
         raise HTTPException(status_code=401, detail="Missing token")
+
+    if token.startswith(API_KEY_PREFIX):
+        user = get_user_by_key(token)
+        if user is None:
+            raise HTTPException(status_code=401, detail="Invalid API key")
+        return user
 
     try:
         payload = decode_token(token)

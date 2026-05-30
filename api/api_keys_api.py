@@ -11,6 +11,7 @@ from __future__ import annotations
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 
+from api.api_errors import error_detail
 from api.auth_api import get_current_user
 from database.api_keys import create_key, list_keys_for_user, delete_key
 
@@ -27,7 +28,25 @@ def post_create_key(
     user: dict = Depends(get_current_user),
 ):
     """Create an API key. The plain key is returned only once; store it securely."""
-    key_meta = create_key(user["id"], body.name)
+    try:
+        key_meta = create_key(user["id"], body.name)
+    except RuntimeError as e:
+        raise HTTPException(
+            status_code=503,
+            detail=error_detail(
+                "schema_not_ready",
+                str(e),
+                hint="Run: alembic upgrade head",
+            ),
+        ) from e
+    try:
+        from services.product_analytics import track
+
+        from database import product_events as pe
+
+        track(pe.EVENT_API_KEY_CREATED, user_id=user["id"], source="server")
+    except Exception:
+        pass
     return {
         "id": key_meta["id"],
         "key": key_meta["key"],
@@ -40,7 +59,17 @@ def post_create_key(
 @router.get("")
 def get_api_keys(user: dict = Depends(get_current_user)):
     """List API keys for the current user (no plain key)."""
-    keys = list_keys_for_user(user["id"])
+    try:
+        keys = list_keys_for_user(user["id"])
+    except RuntimeError as e:
+        raise HTTPException(
+            status_code=503,
+            detail=error_detail(
+                "schema_not_ready",
+                str(e),
+                hint="Run: alembic upgrade head",
+            ),
+        ) from e
     return {"api_keys": keys, "count": len(keys)}
 
 

@@ -1,5 +1,5 @@
 """
-Scheduler entrypoint (ZSET promotion + visibility recovery):
+Scheduler entrypoint (Redis promoter + cron enqueue):
 
   python -m app.workers.scheduler
 """
@@ -8,7 +8,7 @@ from __future__ import annotations
 
 
 def main() -> None:
-    from workers.scheduler_runner import main as run
+    from workers.runtime_supervisor import main as run
 
     run()
 

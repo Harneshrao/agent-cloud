@@ -1,9 +1,8 @@
 import { redirect } from "next/navigation";
 
 /**
- * Home redirects to the main product surface (dashboard).
- * The landing-page analyzer has been removed in favor of the agent marketplace.
+ * Home redirects to the primary wedge surface (projects).
  */
 export default function HomePage() {
-  redirect("/dashboard");
+  redirect("/projects");
 }

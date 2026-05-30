@@ -49,12 +49,15 @@ def process_webhook(
     source: str,
     event_type: str,
     payload: Dict[str, Any],
+    *,
+    project_id: uuid.UUID,
 ) -> List[uuid.UUID]:
     """
     Validate source, normalize payload for the source, then process as internal event.
     Returns list of enqueued task IDs. Raises ValueError if source is not allowed.
+    project_id is required — webhooks must not enqueue global (NULL project) tasks.
     """
     if not validate_source(source):
         raise ValueError(f"Unknown or disallowed webhook source: {source}")
     normalized = _normalize_payload(source, payload)
-    return process_event(event_type, normalized)
+    return process_event(event_type, normalized, project_id=project_id, source="webhook")

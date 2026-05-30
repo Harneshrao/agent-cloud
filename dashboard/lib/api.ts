@@ -1,6 +1,8 @@
 import { refreshAccessToken, clearTokens, getAccessToken } from "@/lib/auth";
-
-const PROJECT_ID = process.env.NEXT_PUBLIC_PROJECT_ID || "1";
+import { ApiRequestError } from "@/lib/api-errors";
+import { parseApiError } from "@/lib/errors";
+import { NO_PROJECT_MESSAGE, friendlyApiError } from "@/lib/project-messages";
+import { getActiveProjectId } from "@/lib/project";
 
 /** Environment-driven API base URL (no proxy). */
 export const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -33,9 +35,10 @@ export function getApiBaseUrl(): string {
 
 function projectHeaders(): HeadersInit {
   const headers: Record<string, string> = {
-    "X-Project-ID": PROJECT_ID,
     "Content-Type": "application/json",
   };
+  const projectId = getActiveProjectId();
+  if (projectId) headers["X-Project-ID"] = projectId;
   if (typeof window !== "undefined") {
     const token = getAccessToken();
     if (token) headers["Authorization"] = `Bearer ${token}`;
@@ -57,22 +60,32 @@ function apiBase(): string {
 }
 
 export async function apiFetch<T = unknown>(path: string): Promise<T> {
-  const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  try {
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    const projectId = getActiveProjectId();
 
-  const res = await fetch(`${API_BASE}${path}`, {
-    headers: {
-      "Content-Type": "application/json",
-      "X-Project-ID": PROJECT_ID,
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-    cache: "no-store",
-  });
+    const res = await fetch(`${API_BASE}${path}`, {
+      headers: {
+        "Content-Type": "application/json",
+        ...(projectId ? { "X-Project-ID": projectId } : {}),
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      cache: "no-store",
+    });
 
-  if (!res.ok) {
-    throw new Error("API error");
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ detail: res.statusText }));
+      throwApiError(parseApiError(err, res.statusText), res.status);
+    }
+
+    return res.json() as Promise<T>;
+  } catch (e) {
+    if (e instanceof ApiRequestError) throw e;
+    if (e instanceof Error && (e.message === "Failed to fetch" || e.message === "Load failed")) {
+      throw new ApiRequestError(SERVER_UNAVAILABLE_MESSAGE, 0);
+    }
+    throw e;
   }
-
-  return res.json() as Promise<T>;
 }
 
 /** Retry fetch up to 5 times with 2s delay when API is temporarily unavailable (network errors). */
@@ -90,8 +103,13 @@ async function fetchWithRetry(
   }
 }
 
+/** User-facing message when the API cannot be reached (no infra commands in UI). */
 export const SERVER_UNAVAILABLE_MESSAGE =
-  "API not reachable.\n\nMake sure backend is running:\n\npy -3.11 run_all.py";
+  "We can't connect to the Agent Cloud API. Check NEXT_PUBLIC_API_URL and that the API is running.";
+
+function throwApiError(message: string, status: number): never {
+  throw new ApiRequestError(friendlyApiError(message), status);
+}
 
 async function fetchApi<T>(path: string, options?: RequestInit, retried = false): Promise<T> {
   try {
@@ -115,7 +133,7 @@ async function fetchApi<T>(path: string, options?: RequestInit, retried = false)
         const retryRes = await fetchWithRetry(`${apiBase()}${path}`, { ...options, headers: retryHeaders });
         if (!retryRes.ok) {
           const err = await retryRes.json().catch(() => ({ detail: retryRes.statusText }));
-          throw new Error((err as { detail?: string }).detail || retryRes.statusText);
+          throw new Error(parseApiError(err, retryRes.statusText));
         }
         return retryRes.json() as Promise<T>;
       } catch (refreshErr) {
@@ -127,7 +145,7 @@ async function fetchApi<T>(path: string, options?: RequestInit, retried = false)
 
     if (!res.ok) {
       const err = await res.json().catch(() => ({ detail: res.statusText }));
-      throw new Error((err as { detail?: string }).detail || res.statusText);
+      throw new Error(parseApiError(err, res.statusText));
     }
     return res.json() as Promise<T>;
   } catch (e) {
@@ -138,7 +156,14 @@ async function fetchApi<T>(path: string, options?: RequestInit, retried = false)
   }
 }
 
+function assertProjectSelected(): void {
+  if (!getActiveProjectId()) {
+    throw new Error(NO_PROJECT_MESSAGE);
+  }
+}
+
 async function fetchProductApi<T>(path: string, options?: RequestInit, retried = false): Promise<T> {
+  assertProjectSelected();
   try {
     const headers: Record<string, string> = {
       ...(projectHeaders() as Record<string, string>),
@@ -156,24 +181,28 @@ async function fetchProductApi<T>(path: string, options?: RequestInit, retried =
         const retryRes = await fetchWithRetry(`${apiBase()}${path}`, { ...options, headers: retryHeaders });
         if (!retryRes.ok) {
           const err = await retryRes.json().catch(() => ({ detail: retryRes.statusText }));
-          throw new Error((err as { detail?: string }).detail || retryRes.statusText);
+          throwApiError(parseApiError(err, retryRes.statusText), retryRes.status);
         }
         return retryRes.json() as Promise<T>;
       } catch (refreshErr) {
         clearTokens();
         window.location.href = "/login";
-        throw refreshErr instanceof Error ? refreshErr : new Error("Session expired");
+        throw refreshErr instanceof Error ? refreshErr : new ApiRequestError("Session expired", 401);
       }
     }
 
     if (!res.ok) {
       const err = await res.json().catch(() => ({ detail: res.statusText }));
-      throw new Error((err as { detail?: string }).detail || res.statusText);
+      throwApiError(parseApiError(err, res.statusText), res.status);
     }
     return res.json() as Promise<T>;
   } catch (e) {
+    if (e instanceof ApiRequestError) throw e;
     if (e instanceof Error && (e.message === "Failed to fetch" || e.message === "Load failed")) {
-      throw new Error(SERVER_UNAVAILABLE_MESSAGE);
+      throw new ApiRequestError(SERVER_UNAVAILABLE_MESSAGE, 0);
+    }
+    if (e instanceof Error) {
+      throw new ApiRequestError(friendlyApiError(e.message), 0);
     }
     throw e;
   }
@@ -184,12 +213,105 @@ export async function fetchSystemMetrics() {
   return fetchApi<import("@/types").SystemMetrics>("/system/metrics");
 }
 
+export async function fetchProjects() {
+  return fetchApi<{ projects: Array<{ id: string; name: string; created_at?: string }> }>("/projects");
+}
+
+export async function createProject(name: string) {
+  return fetchApi<{ project: { id: string; name: string } }>("/projects", {
+    method: "POST",
+    body: JSON.stringify({ name }),
+  });
+}
+
+export async function fetchApiKeysList() {
+  return fetchApi<{ api_keys: Array<{ id: number; name: string; created_at?: string }>; count: number }>(
+    "/api-keys"
+  );
+}
+
 export async function fetchSystemWorkers() {
-  return fetchApi<{ workers: import("@/types").WorkerInfo[]; count: number }>("/system/workers");
+  try {
+    return await fetchApi<{ workers: import("@/types").WorkerInfo[]; count: number }>(
+      "/observability/workers"
+    );
+  } catch {
+    return fetchApi<{ workers: import("@/types").WorkerInfo[]; count: number }>("/system/workers");
+  }
 }
 
 export async function fetchSystemQueue() {
-  return fetchApi<import("@/types").QueueInfo>("/system/queue");
+  try {
+    const res = await fetchApi<{ queue: Record<string, unknown> }>("/observability/queue");
+    const q = res.queue || {};
+    return {
+      queue_key: String(q.keys && (q.keys as Record<string, string>).ready || "queue:ready"),
+      queue_length: Number(q.queue_ready ?? 0),
+      queue_retry: Number(q.queue_retry ?? 0),
+      visibility_stale: Number(q.visibility_stale_count ?? 0),
+    } as import("@/types").QueueInfo & {
+      queue_retry?: number;
+      visibility_stale?: number;
+    };
+  } catch {
+    return fetchApi<import("@/types").QueueInfo>("/system/queue");
+  }
+}
+
+export async function fetchObservabilityHealth() {
+  return fetchApi<{
+    platform: Record<string, unknown>;
+    project: Record<string, unknown>;
+    queue: Record<string, unknown>;
+  }>("/observability/health");
+}
+
+export async function fetchObservabilityTasks(limit = 50) {
+  return fetchApi<{ tasks: import("@/types").TaskListItem[] }>(
+    `/observability/tasks?limit=${limit}`
+  );
+}
+
+export async function fetchTaskTrace(taskId: string) {
+  return fetchApi<import("@/types").TaskTrace>(`/observability/tasks/${taskId}/trace`);
+}
+
+export async function fetchObservabilityDlq(limit = 50) {
+  return fetchApi<{ dead_letters: import("@/types").DlqItem[]; count: number }>(
+    `/observability/dlq?limit=${limit}`
+  );
+}
+
+export async function fetchObservabilityIncidents() {
+  return fetchApi<{ incidents: import("@/types").IncidentItem[] }>("/observability/incidents");
+}
+
+export interface BillingSummary {
+  project_id: string;
+  plan: { name?: string; price_usd?: number };
+  usage: {
+    runs_enqueued: number;
+    runs_completed: number;
+    runs_failed: number;
+    retries: number;
+    dlq_entries: number;
+    execution_time_ms: number;
+    deployments: number;
+    artifact_storage_mb: number;
+    concurrent_running: number;
+  };
+  limits: Record<string, number | null | undefined>;
+  warnings: Array<{ code: string; message: string }>;
+}
+
+export async function fetchBillingSummary() {
+  return fetchApi<BillingSummary>("/billing/summary");
+}
+
+export async function fetchBillingEvents(limit = 50) {
+  return fetchApi<{ events: Array<Record<string, unknown>> }>(
+    `/billing/events?limit=${limit}`
+  );
 }
 
 export async function fetchSystemContainers() {
@@ -403,6 +525,76 @@ export async function fetchDashboard() {
 
 export async function fetchInstallations() {
   return fetchProductApi<{ installations: import("@/types").Installation[] }>("/agents/installations");
+}
+
+export async function fetchDeployments() {
+  return fetchProductApi<{ deployments: import("@/types").DeploymentRecord[] }>("/deployments");
+}
+
+export async function fetchDeploymentArtifacts() {
+  return fetchProductApi<{ artifacts: import("@/types").DeploymentArtifact[] }>(
+    "/deployments/artifacts"
+  );
+}
+
+export async function deployOnboardingSample(
+  sampleName: "sample_echo" | "sample_fail" | "sample_slow"
+) {
+  return fetchProductApi<{
+    message: string;
+    artifact: import("@/types").DeploymentArtifact;
+    deployment: import("@/types").DeploymentRecord;
+  }>(`/deployments/onboarding/sample/${sampleName}`, { method: "POST" });
+}
+
+export async function uploadDeploymentArtifact(file: File, version?: string) {
+  const form = new FormData();
+  form.append("file", file);
+  if (version) form.append("version", version);
+  const headers: Record<string, string> = {};
+  const pid = getActiveProjectId();
+  if (!pid) {
+    throw new Error(NO_PROJECT_MESSAGE);
+  }
+  headers["X-Project-ID"] = pid;
+  if (typeof window !== "undefined") {
+    const token = getAccessToken();
+    if (token) headers["Authorization"] = `Bearer ${token}`;
+  }
+  const res = await fetchWithRetry(`${apiBase()}/deployments/artifacts/upload`, {
+    method: "POST",
+    headers,
+    body: form,
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(friendlyApiError(parseApiError(err, "Upload failed")));
+  }
+  return res.json() as Promise<{ artifact: import("@/types").DeploymentArtifact; message: string }>;
+}
+
+export async function deployArtifact(artifactId: string, configuration?: Record<string, unknown>) {
+  return fetchProductApi<{ deployment: import("@/types").DeploymentRecord; message: string }>(
+    "/deployments",
+    {
+      method: "POST",
+      body: JSON.stringify({ artifact_id: artifactId, configuration: configuration || {} }),
+    }
+  );
+}
+
+export async function runDeployment(deploymentId: string, input: Record<string, unknown> = {}) {
+  return fetchProductApi<{ status: string; task_id: string; agent: string; task: string }>(
+    `/deployments/${deploymentId}/run`,
+    { method: "POST", body: JSON.stringify({ input, task_text: "Run deployed agent" }) }
+  );
+}
+
+export async function rollbackDeployment(deploymentId: string) {
+  return fetchProductApi<{ deployment: import("@/types").DeploymentRecord; message: string }>(
+    `/deployments/${deploymentId}/rollback`,
+    { method: "POST" }
+  );
 }
 
 export async function installAgent(agentName: string) {
@@ -629,6 +821,14 @@ export async function sendVerificationEmail(email: string): Promise<{ message: s
     throw new Error((data.detail ?? "Request failed") as string);
   }
   return data as { message: string };
+}
+
+// ——— PMF / activation analytics (founder) ———
+
+export async function fetchPmfSummary(days = 30) {
+  return fetchApi<import("@/lib/analytics").PmfSummary>(
+    `/analytics/pmf/summary?days=${days}`
+  );
 }
 
 export async function verifyEmail(token: string): Promise<{ message: string }> {

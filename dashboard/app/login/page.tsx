@@ -82,7 +82,7 @@ export default function LoginPage({
       <AuthCard>
         <div className="text-center">
           <h1 className="text-2xl font-semibold text-primary">Agent Cloud</h1>
-          <p className="mt-2 text-lg text-foreground-secondary">Sign in</p>
+          <p className="mt-2 text-lg text-black">Sign in</p>
         </div>
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-5">
@@ -136,14 +136,14 @@ export default function LoginPage({
             Sign In
           </AuthButton>
 
-          <p className="text-center text-sm">
+          <p className="text-center text-sm text-black">
             <Link href="/forgot-password" className="text-[#0A66C2] hover:underline">
               Forgot password?
             </Link>
           </p>
         </form>
 
-        <p className="mt-6 text-center text-sm text-foreground-secondary">
+        <p className="mt-6 text-center text-sm text-black">
           New here?{" "}
           <Link href="/signup" className="font-semibold text-[#0A66C2] hover:underline">
             Join now

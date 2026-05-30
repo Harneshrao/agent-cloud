@@ -40,20 +40,28 @@ class CompatCursor:
         self._lastrowid = None
         sql = _adapt_sql(sql)
         sql = sql.replace("?", "%s")
-        if params is not None:
-            self._cur.execute(sql, params)
-        else:
-            self._cur.execute(sql)
+        try:
+            if params is not None:
+                self._cur.execute(sql, params)
+            else:
+                self._cur.execute(sql)
+        except Exception:
+            self._raw_conn.rollback()
+            raise
         stripped = sql.strip().upper()
         if (
             stripped.startswith("INSERT")
             and "RETURNING" not in stripped
             and "ON CONFLICT" not in stripped
         ):
-            self._cur.execute("SELECT lastval() AS lastval")
-            row = self._cur.fetchone()
-            if row is not None:
-                self._lastrowid = int(row["lastval"] if isinstance(row, dict) else row[0])
+            try:
+                self._cur.execute("SELECT lastval() AS lastval")
+                row = self._cur.fetchone()
+                if row is not None:
+                    self._lastrowid = int(row["lastval"] if isinstance(row, dict) else row[0])
+            except Exception:
+                # Tables with non-serial PKs (e.g. task_idempotency) — no lastval
+                self._lastrowid = None
         return self
 
     @property

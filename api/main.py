@@ -47,10 +47,15 @@ from api.system_api import router as system_router
 from api.api_keys_api import router as api_keys_router
 from api.event_api import router as event_router
 from api.webhook_api import router as webhook_router
+from api.billing_api import router as billing_router
+from api.deployments_api import router as deployments_router
+from api.middleware.project_rate_limit import ProjectRateLimitMiddleware
+from api.observability_api import router as observability_router
 from api.projects_api import router as projects_router
 from api.teams_api import router as teams_router
 from api.plans_api import router as plans_router
 from api.usage_api import router as usage_router
+from api.pmf_analytics_api import router as pmf_analytics_router
 
 # --- Agents v2, templates, packages, simulation, autonomous ---
 from api.agents_v2_api import router as agents_v2_router
@@ -76,6 +81,9 @@ async def _lifespan(_app: FastAPI):
     from agent_runtime.loader import discover_agents
 
     discover_agents()
+    from config.production_guard import assert_production_safety
+
+    assert_production_safety()
     assert_migrations_applied()
     logging.getLogger("uvicorn.error").info(
         "PostgreSQL OK: DATABASE_URL loaded from environment; migration check passed."
@@ -83,7 +91,17 @@ async def _lifespan(_app: FastAPI):
     yield
 
 
-app = FastAPI(title="Agent Cloud API", version="2.0.0", lifespan=_lifespan)
+app = FastAPI(
+    title="Agent Cloud API",
+    version="2.0.0",
+    lifespan=_lifespan,
+    description=(
+        "Deploy Python agent ZIPs, run tasks, and inspect logs. "
+        "Primary flow: POST /deployments/artifacts/upload → POST /deployments → "
+        "POST /deployments/{id}/run → GET /observability/tasks/{id}. "
+        "Set ENABLE_LEGACY_PLATFORM=1 for marketplace/workflow routes."
+    ),
+)
 
 app.add_middleware(BodySizeLimitMiddleware)
 app.add_middleware(AuthRateLimitMiddleware)
@@ -103,35 +121,41 @@ app.add_middleware(
 )
 
 # Trace + optional token-bucket (last registered = outermost; runs first on request)
+app.add_middleware(ProjectRateLimitMiddleware)
 app.add_middleware(TokenBucketRateLimitMiddleware)
 app.add_middleware(TraceContextMiddleware)
 
 # Auth (Google OAuth lives in api/auth_google.py — enable when DB helpers are wired)
 app.include_router(auth_router)
+app.include_router(auth_router, prefix="/auth")  # dashboard + SDK expect /auth/login
 
-# Marketplace discovery & run (static paths first)
-app.include_router(agent_store_router)
-app.include_router(agent_run_alias_router)
-app.include_router(agent_ecosystem_router)
-app.include_router(developers_router)
+def _legacy_platform_enabled() -> bool:
+    return os.environ.get("ENABLE_LEGACY_PLATFORM", "").strip().lower() in (
+        "1",
+        "true",
+        "yes",
+    )
 
-# Browse UI API
-app.include_router(marketplace_browse_router)
-
-# Product: /agents/installations, /dashboard
+# Wedge product (always on)
 app.include_router(agents_installations_product_router)
 app.include_router(dashboard_router)
-app.include_router(installations_schedules_router)
 
-# Developer economy
-app.include_router(developers_economy_router)
-
-# Tasks & workflows
-app.include_router(workflow_router)
-app.include_router(demo_router)
-app.include_router(war_room_router)
-app.include_router(legacy_scheduler_router)
-app.include_router(task_scheduler_router)
+if _legacy_platform_enabled():
+    # Marketplace discovery & run (static paths first)
+    app.include_router(agent_store_router)
+    app.include_router(agent_run_alias_router)
+    app.include_router(agent_ecosystem_router)
+    app.include_router(developers_router)
+    app.include_router(marketplace_browse_router)
+    app.include_router(installations_schedules_router)
+    app.include_router(developers_economy_router)
+    app.include_router(workflow_router)
+    app.include_router(demo_router)
+    app.include_router(war_room_router)
+    app.include_router(legacy_scheduler_router)
+    app.include_router(task_scheduler_router)
+else:
+    app.include_router(task_scheduler_router)  # cron schedules for product
 
 # Platform
 app.include_router(system_router)
@@ -139,20 +163,29 @@ app.include_router(api_keys_router)
 app.include_router(event_router)
 app.include_router(webhook_router)
 app.include_router(projects_router)
+app.include_router(deployments_router)
+app.include_router(observability_router)
+app.include_router(billing_router)
 app.include_router(teams_router)
 app.include_router(plans_router)
 app.include_router(usage_router)
+app.include_router(pmf_analytics_router)
 
-# Agents v2, templates, packages
+# Agents v2 (programmatic run)
 app.include_router(agents_v2_router)
-app.include_router(templates_router)
-app.include_router(packages_router)
-app.include_router(simulation_router)
-app.include_router(autonomous_router)
 
-# Registry & instances
-app.include_router(agents_registry_router)
-app.include_router(agent_instances_router)
+if _legacy_platform_enabled():
+    app.include_router(templates_router)
+    app.include_router(packages_router)
+    app.include_router(simulation_router)
+    app.include_router(autonomous_router)
+    app.include_router(agents_registry_router)
+    app.include_router(agent_instances_router)
+
+# Modular v1 surface (same process — path `/v1/...` for new handlers).
+from agent_cloud.app.api.v1.router import router as _agent_cloud_v1_router
+
+app.include_router(_agent_cloud_v1_router, prefix="/v1")
 
 
 @app.get("/")
@@ -161,5 +194,12 @@ def root():
 
 
 @app.get("/health")
-def health():
-    return {"status": "ok"}
+def health(deep: bool = False):
+    body: dict = {"status": "ok"}
+    if deep:
+        from services.health_checks import component_status, overall_status
+
+        components = component_status()
+        body["components"] = components
+        body["status"] = overall_status(components)
+    return body

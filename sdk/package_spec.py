@@ -35,6 +35,8 @@ def load_spec(package_dir: str | Path) -> Dict[str, Any]:
         raise ImportError("PyYAML is required to load agent packages. Install with: pip install pyyaml")
 
     data = yaml.safe_load(raw)
+    if not isinstance(data, dict):
+        raise ValueError("agent.yaml must be a YAML object")
     name = data.get("name")
     if not name or not str(name).strip():
         raise ValueError("agent.yaml must define 'name'")
@@ -44,6 +46,7 @@ def load_spec(package_dir: str | Path) -> Dict[str, Any]:
         "description": str(data.get("description") or "").strip(),
         "capabilities": _ensure_capabilities_list(data.get("capabilities")),
         "entrypoint": str(data.get("entrypoint") or "agent.py").strip(),
+        "runtime": str(data.get("runtime") or "python").strip().lower(),
     }
     return spec
 
@@ -57,6 +60,4 @@ def _ensure_capabilities_list(capabilities: Any) -> List[str]:
     if isinstance(capabilities, str):
         return [capabilities.strip()] if capabilities.strip() else []
     return []
-    if not isinstance(data, dict):
-        raise ValueError("agent.yaml must be a YAML object")
 

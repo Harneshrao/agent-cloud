@@ -1,13 +1,14 @@
 """
-Entrypoint to run the scheduler service from the project root.
+Entrypoint to run the unified scheduler supervisor from the project root.
 
 Usage: python start_scheduler.py
 
-Calls the same logic as: python -m scheduler.scheduler_service
+Runs Redis ZSET promotion + visibility recovery (scheduler_runner) and
+cron-based enqueue (scheduler_service) in one process.
 """
 
-from scheduler.scheduler_service import start_scheduler
+from workers.runtime_supervisor import main
 
 if __name__ == "__main__":
-    print("Starting scheduler (root entrypoint)...")
-    start_scheduler()
+    print("Starting runtime supervisor (Redis promoter + cron enqueue)...")
+    main()

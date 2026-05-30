@@ -47,6 +47,16 @@ def create_project(
         raise HTTPException(status_code=500, detail="Invalid user identity")
     try:
         project = db_create_project(user_id=uid, name=data.name.strip())
+        try:
+            from services.product_analytics import track_project_created
+
+            track_project_created(
+                uid,
+                uuid.UUID(project["id"]),
+                name=data.name.strip(),
+            )
+        except Exception:
+            pass
         return {"project": project}
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))

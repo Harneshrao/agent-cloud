@@ -8,7 +8,7 @@ from pydantic import BaseModel, Field
 from api.deps import require_project_can_run
 from api.schemas.task_responses import AgentsV2RunResponse
 from agent_runtime.loader import get_agent_class
-from task_queue.task_queue import enqueue_task
+from services.task_service import enqueue_task
 
 
 router = APIRouter(prefix="/agents/v2", tags=["agents-v2"])

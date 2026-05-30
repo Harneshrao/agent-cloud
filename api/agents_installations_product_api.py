@@ -29,7 +29,7 @@ from database.agent_schedules import (
 )
 from database.agent_pricing import get_price as get_agent_price
 from engine.quota_checker import check_quota
-from task_queue.task_queue import enqueue_task
+from services.task_service import enqueue_task
 
 
 router = APIRouter(prefix="/agents/installations", tags=["agents-installations"])

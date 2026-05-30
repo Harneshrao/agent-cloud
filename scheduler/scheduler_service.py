@@ -12,7 +12,7 @@ from datetime import datetime, timedelta
 from typing import Optional
 
 from database.scheduled_tasks import list_enabled, update_last_run
-from task_queue.task_queue import enqueue_task
+from services.task_service import enqueue_task
 
 try:
     from croniter import croniter

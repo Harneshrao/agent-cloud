@@ -1,5 +1,6 @@
 import "./globals.css";
 import Providers from "./providers";
+import { ProductLayout } from "@/components/product/product-layout";
 import { Plus_Jakarta_Sans } from "next/font/google";
 
 const plusJakarta = Plus_Jakarta_Sans({
@@ -16,7 +17,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${plusJakarta.className} min-h-screen bg-background text-foreground antialiased`}>
-        <Providers>{children}</Providers>
+        <Providers>
+          <ProductLayout>{children}</ProductLayout>
+        </Providers>
       </body>
     </html>
   );

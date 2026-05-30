@@ -63,7 +63,7 @@ def finish_agent(agent_name: str, task_id: int) -> None:
     project_id = task_info.get("project_id") if task_info else None
     installation_id = None
     if task_info and task_info.get("task_text"):
-        from task_queue.task_queue import _parse_payload
+        from services.task_payload import parse_payload as _parse_payload
         parsed = _parse_payload(task_info["task_text"])
         installation_id = parsed.get("installation_id")
     if installation_id is not None:
@@ -163,7 +163,7 @@ def fail_agent(agent_name: str, task_id: int, error: Any) -> None:
     task_info = get_task_text_and_status(task_id)
     installation_id = None
     if task_info and task_info.get("task_text"):
-        from task_queue.task_queue import _parse_payload
+        from services.task_payload import parse_payload as _parse_payload
         parsed = _parse_payload(task_info["task_text"])
         installation_id = parsed.get("installation_id")
     if installation_id is not None:

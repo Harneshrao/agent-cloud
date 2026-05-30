@@ -42,8 +42,10 @@ def load_agent_package(
     extract_root = Path(tempfile.gettempdir()) / prefix / str(uuid.uuid4())
     extract_root.mkdir(parents=True, exist_ok=True)
     try:
+        from agent_runtime.safe_extract import safe_extract_zip
+
         with zipfile.ZipFile(zip_path, "r") as zf:
-            zf.extractall(extract_root)
+            safe_extract_zip(zf, extract_root)
     except Exception as e:
         import shutil
         shutil.rmtree(extract_root, ignore_errors=True)

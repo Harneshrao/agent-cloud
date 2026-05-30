@@ -1,0 +1,5 @@
+name: sample_slow
+version: "1.0.0"
+description: Sleeps briefly to demonstrate execution time and timeouts
+runtime: python
+entrypoint: agent.py

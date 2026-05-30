@@ -187,7 +187,7 @@ class Agent:
             update_simulation_metrics(sim_id, workflows_executed=1)
             return tid
         from database.autonomous_policies import record_launch_and_check, LAUNCH_SOURCE_AGENT
-        from task_queue.task_queue import enqueue_task as queue_enqueue
+        from services.task_service import enqueue_task as queue_enqueue
         if not record_launch_and_check(self.name, project_id, LAUNCH_SOURCE_AGENT):
             return None
         payload = {"task": task} if isinstance(task, str) else task
@@ -271,7 +271,7 @@ class Agent:
             return task_id
         from database.autonomous_policies import record_launch_and_check, LAUNCH_SOURCE_AGENT
         from database.agent_instances import list_instances_for_project
-        from task_queue.task_queue import enqueue_task as queue_enqueue
+        from services.task_service import enqueue_task as queue_enqueue
         if not record_launch_and_check(self.name, project_id, LAUNCH_SOURCE_AGENT):
             return None
         instances = list_instances_for_project(project_id, agent_name=agent_name, limit=1)

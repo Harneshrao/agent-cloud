@@ -63,24 +63,21 @@ def web_search(task):
 
 
 def _is_url_allowed(url_str: str) -> bool:
-    """Block file://, non-http(s), and private/metadata hosts to mitigate SSRF."""
+    """DNS-aware SSRF check via security.ssrf (blocks private/metadata IPs)."""
     try:
-        parsed = urlparse(url_str)
-        if parsed.scheme not in ("http", "https"):
-            return False
-        host = (parsed.netloc or "").split(":")[0]
-        if not host or host in ("localhost", "localhost."):
-            return False
-        try:
-            addr = ipaddress.ip_address(host)
-        except ValueError:
-            return True  # allow by-name hosts; DNS rebinding risk remains
-        for net in BLOCKED_NETWORKS:
-            if addr in net:
-                return False
+        from security.ssrf import SSRFBlockedError, assert_url_allowed
+
+        assert_url_allowed(url_str)
         return True
     except Exception:
         return False
+
+
+def _safe_http_get(url: str) -> requests.Response:
+    """GET with redirects disabled after SSRF validation."""
+    return requests.get(
+        url, timeout=REQUEST_TIMEOUT, allow_redirects=False, stream=True
+    )
 
 
 def _is_binary_content(content_type: str | None, content: bytes) -> bool:
@@ -109,13 +106,13 @@ def web_scraper(task):
     if not url or not _is_url_allowed(url):
         return "Scraping failed: URL not allowed (use https and avoid private IPs)"
     try:
-        resp = requests.get(url, timeout=REQUEST_TIMEOUT)
+        resp = _safe_http_get(url)
         resp.raise_for_status()
         content = resp.content[:MAX_RESPONSE_BYTES]
         if len(resp.content) > MAX_RESPONSE_BYTES:
             _security_log.warning(
                 "tool_response_too_large tool=web_scraper size=%s limit=%s",
-                len(resp.content), MAX_RESPONSE_BYTES,
+                len(content), MAX_RESPONSE_BYTES,
                 extra={"event": "tool_response_too_large", "tool_name": "web_scraper", "size": len(resp.content), "limit": MAX_RESPONSE_BYTES},
             )
         if _is_binary_content(resp.headers.get("content-type"), content):
@@ -172,13 +169,13 @@ def api_caller(task):
     if not endpoint or not _is_url_allowed(endpoint):
         return "API call failed: URL not allowed (use https and avoid private IPs)"
     try:
-        resp = requests.get(endpoint, timeout=REQUEST_TIMEOUT)
+        resp = _safe_http_get(endpoint)
         resp.raise_for_status()
         content = resp.content[:MAX_RESPONSE_BYTES]
         if len(resp.content) > MAX_RESPONSE_BYTES:
             _security_log.warning(
                 "tool_response_too_large tool=api_caller size=%s limit=%s",
-                len(resp.content), MAX_RESPONSE_BYTES,
+                len(content), MAX_RESPONSE_BYTES,
                 extra={"event": "tool_response_too_large", "tool_name": "api_caller", "size": len(resp.content), "limit": MAX_RESPONSE_BYTES},
             )
         if _is_binary_content(resp.headers.get("content-type"), content):

@@ -1,0 +1,5 @@
+name: sample_fail
+version: "1.0.0"
+description: Fails once to demonstrate retries and DLQ
+runtime: python
+entrypoint: agent.py

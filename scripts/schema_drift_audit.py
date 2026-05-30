@@ -238,7 +238,7 @@ def main() -> None:
             "database_py_with_create_table_substring": create_in_modules,
             "database_py_with_ensure_schema": ensure_modules,
             "solana_agent": {
-                "async_metadata_create_all": "solana_agent/app/core/database.py:create_tables",
+                "async_metadata_create_all": "archive/solana_agent/app/core/database.py:create_tables",
                 "example_model": [{"class": "Task", "__tablename__": "tasks"}],
             },
         }

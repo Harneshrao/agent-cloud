@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { useApi } from "@/hooks/useApi";
 import type { DashboardData } from "@/types";
 import { MetricCard } from "@/components/ui/metric-card";
@@ -9,28 +8,10 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { Bot, PlayCircle, Loader2 } from "lucide-react";
-import { runDemoWorkflow } from "@/lib/api";
+import { Bot } from "lucide-react";
 
 export default function Dashboard() {
   const { data, loading, error } = useApi<DashboardData>("/dashboard");
-  const router = useRouter();
-  const [demoLoading, setDemoLoading] = useState(false);
-  const [demoToast, setDemoToast] = useState<string | null>(null);
-
-  const handleRunDemo = async () => {
-    setDemoToast(null);
-    setDemoLoading(true);
-    try {
-      const res = await runDemoWorkflow();
-      router.push(`/workflows/${res.workflow_id}`);
-    } catch (e) {
-      const msg = e instanceof Error ? e.message : "Failed to start demo workflow";
-      setDemoToast(msg);
-    }
-    setDemoLoading(false);
-  };
 
   if (loading) {
     return (
@@ -111,46 +92,6 @@ export default function Dashboard() {
         />
       </div>
 
-      <Card className="p-6 flex flex-col gap-4 border-dashed border-border/70 bg-elevated/40">
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            <div className="text-[15px] font-semibold text-foreground flex items-center gap-2">
-              <PlayCircle className="h-5 w-5 text-primary" />
-              Run Demo Workflow
-            </div>
-            <div className="mt-1 text-sm text-foreground-secondary">
-              Fire a pre-configured workflow to see tasks, logs, and status in under 30 seconds.
-            </div>
-          </div>
-          <Button
-            size="sm"
-            className="gap-2"
-            onClick={handleRunDemo}
-            disabled={demoLoading}
-          >
-            {demoLoading ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin" />
-                Running…
-              </>
-            ) : (
-              <>
-                <PlayCircle className="h-4 w-4" />
-                Run demo
-              </>
-            )}
-          </Button>
-        </div>
-        {demoToast && (
-          <div className="mt-2 rounded-xl border border-error/30 bg-error/5 px-4 py-3 text-sm text-error flex items-center justify-between gap-4">
-            <span className="min-w-0 flex-1">{demoToast}</span>
-            <Button size="sm" variant="secondary" onClick={handleRunDemo} disabled={demoLoading}>
-              Retry
-            </Button>
-          </div>
-        )}
-      </Card>
-
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <Card className="p-6 lg:col-span-2">
           <div className="flex items-start justify-between gap-4">
@@ -159,7 +100,7 @@ export default function Dashboard() {
               <div className="mt-1 text-sm text-foreground-secondary">What’s installed and ready to run.</div>
             </div>
             <Button asChild variant="secondary" size="sm">
-              <Link href="/marketplace">Browse Marketplace</Link>
+              <Link href="/agents">Agents</Link>
             </Button>
           </div>
 
@@ -171,7 +112,7 @@ export default function Dashboard() {
                 description="Install your first agent to start automating workflows."
                 action={
                   <Button asChild>
-                    <Link href="/marketplace">Browse Marketplace</Link>
+                    <Link href="/deployments">Deployments</Link>
                   </Button>
                 }
               />

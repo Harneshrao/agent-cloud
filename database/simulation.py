@@ -747,7 +747,7 @@ def get_next_simulation_task(simulation_id: int) -> Optional[Dict[str, Any]]:
         (task_id,),
     )
     conn.commit()
-    from task_queue.task_queue import _parse_payload
+    from services.task_payload import parse_payload as _parse_payload
     parsed = _parse_payload(row["task_text"])
     created = row["created_at"]
     if hasattr(created, "isoformat"):

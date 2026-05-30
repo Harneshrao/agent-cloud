@@ -141,7 +141,12 @@ Locks + conditional `UPDATE` together give **at-most-once** execution per attemp
 | Queue + processing ZSET | `redis_queue_pkg/redis_queue.py` |
 | Backoff | `execution/backoff.py` |
 | Recovery helpers | `execution/recovery.py` |
-| Scheduler loop | `workers/scheduler_runner.py` |
-| Reference execution loop | `workers/execution_worker.py` |
+| **Canonical worker loop** | `workers/guaranteed_loop.py` |
+| **Execution body** | `workers/agent_executor.py` |
+| **Retry / DLQ** | `workers/task_outcome.py` |
+| **Worker entry** | `workers/canonical_worker.py`, `app.workers.worker` |
+| Redis promoter | `workers/scheduler_runner.py` |
+| Cron enqueue | `scheduler/scheduler_service.py` |
+| **Unified scheduler process** | `workers/runtime_supervisor.py` |
 
-The legacy `workers/worker.py` remains the full integration path (DAG, idempotency table, DLQ helpers). New modules document the **target** pattern and can be wired as the primary path in a follow-up.
+Detail: [`migration/EXECUTION_CANONICAL.md`](migration/EXECUTION_CANONICAL.md). `services.task_service.fetch_next_task` is legacy (claim before lock); do not use for new code.

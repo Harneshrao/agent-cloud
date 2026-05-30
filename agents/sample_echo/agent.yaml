@@ -1,0 +1,6 @@
+name: sample_echo
+version: "1.0.0"
+description: Minimal echo agent for Agent Cloud onboarding
+runtime: python
+entrypoint: agent.py
+capabilities: []

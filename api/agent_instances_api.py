@@ -26,7 +26,7 @@ from database.agent_instances import (
     update_state,
 )
 from database.autonomous_policies import record_launch_and_check, LAUNCH_SOURCE_AGENT
-from task_queue.task_queue import enqueue_task
+from services.task_service import enqueue_task
 
 router = APIRouter(prefix="/agent-instances", tags=["agent-instances"])
 

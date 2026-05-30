@@ -11,7 +11,7 @@ from __future__ import annotations
 from typing import Any, Dict, List, Optional
 
 from database.task_graph import insert_link
-from task_queue.task_queue import enqueue_task
+from services.task_service import enqueue_task
 
 
 def enqueue_subtasks(

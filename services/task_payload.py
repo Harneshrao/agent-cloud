@@ -45,6 +45,8 @@ def parse_payload(task_text: Any) -> Dict[str, Any]:
                 out["agent_instance_id"] = data["agent_instance_id"]
             if "installation_id" in data and data["installation_id"] is not None:
                 out["installation_id"] = data["installation_id"]
+            if "deployment_id" in data and data["deployment_id"]:
+                out["deployment_id"] = data["deployment_id"]
             if "input" in data:
                 out["input"] = data["input"]
             return out

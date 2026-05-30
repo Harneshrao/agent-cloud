@@ -12,7 +12,12 @@ import hashlib
 import json
 import os
 
-from fastapi import APIRouter, HTTPException, Request
+import uuid
+
+from fastapi import APIRouter, Depends, HTTPException, Request
+
+from api.deps import require_project_id
+from engine.quota_checker import QuotaExceeded
 
 from api.security_logger import log_failed_webhook_verification
 from api.schemas.task_responses import WebhookIngestResponse
@@ -44,7 +49,11 @@ def _verify_webhook_signature(secret: str, payload_bytes: bytes, signature_heade
 
 
 @router.post("/{source}")
-async def ingest_webhook(source: str, request: Request):
+async def ingest_webhook(
+    source: str,
+    request: Request,
+    project_id: uuid.UUID = Depends(require_project_id),
+):
     """
     Receive a webhook from an external system. Source must be allowed (e.g. github, slack).
     Requires X-Signature: HMAC-SHA256(secret, raw_body) in hex. Secret from WEBHOOK_SECRET or WEBHOOK_SECRET_<SOURCE>.
@@ -74,7 +83,12 @@ async def ingest_webhook(source: str, request: Request):
         raise HTTPException(status_code=400, detail="event_type required")
 
     try:
-        task_ids = process_webhook(source, event_type, payload)
+        from services.quota_service import check_enqueue_quota
+
+        check_enqueue_quota(project_id)
+        task_ids = process_webhook(
+            source, event_type, payload, project_id=project_id
+        )
         return WebhookIngestResponse(
             status="accepted",
             source=source,
@@ -84,3 +98,8 @@ async def ingest_webhook(source: str, request: Request):
         )
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+    except QuotaExceeded as e:
+        raise HTTPException(
+            status_code=429,
+            detail={"message": str(e), "limit_type": "usage_quota_exceeded"},
+        ) from e

@@ -85,6 +85,7 @@ def _row_to_task_dict(
         "target_region",
         "agent_instance_id",
         "installation_id",
+        "deployment_id",
         "input",
     ):
         if k in parsed:
@@ -117,6 +118,9 @@ def enqueue_task(
     project_id: Optional[Union[str, uuid.UUID]] = None,
     user_region: Optional[str] = None,
 ) -> uuid.UUID:
+    from config.production_guard import check_emergency_disable
+
+    check_emergency_disable("enqueue")
     if isinstance(task, str):
         task = {"task": task}
     task = ensure_task_capabilities(task)
@@ -131,10 +135,50 @@ def enqueue_task(
         except Exception:
             pass
     task_text = serialize_payload(task)
+    if project_id is not None:
+        from services.quota_service import check_enqueue_quota
+
+        check_enqueue_quota(project_id)
+
     task_id = db.create_task(
         task_text=task_text, status="queued", project_id=project_id
     )
     get_task_queue().enqueue_ready(task_id)
+    if project_id is not None:
+        try:
+            from services.usage_metering import record_task_enqueued
+
+            dep_id = None
+            if isinstance(task, dict) and task.get("deployment_id"):
+                dep_id = uuid.UUID(str(task["deployment_id"]))
+            record_task_enqueued(
+                project_id,
+                task_id,
+                deployment_id=dep_id,
+                agent_name=task.get("agent") if isinstance(task, dict) else None,
+            )
+        except Exception:
+            pass
+    try:
+        from agent_cloud.infra.observability.operational_log import emit_task_trace_event
+        from config.redis_keys import REDIS_QUEUE_READY
+
+        emit_task_trace_event(
+            task_id,
+            "enqueued",
+            {
+                "project_id": str(project_id) if project_id else None,
+                "deployment_id": (
+                    str(task.get("deployment_id")) if isinstance(task, dict) else None
+                ),
+                "queue_name": REDIS_QUEUE_READY,
+                "runtime_version": (
+                    task.get("runtime") if isinstance(task, dict) else None
+                ),
+            },
+        )
+    except Exception:
+        pass
     return task_id
 
 
@@ -191,9 +235,25 @@ def fetch_next_task(
 
 
 def update_task_status(task_id: Union[int, str, uuid.UUID], status: str) -> None:
-    if status not in ("completed", "failed"):
-        raise ValueError("status must be 'completed' or 'failed'")
-    db.update_task_status(_task_id_str(task_id), status)
+    allowed = ("completed", "failed", "retry", "dead", "queued", "running")
+    if status not in allowed:
+        raise ValueError(f"status must be one of {allowed}")
+    if status in ("completed", "failed"):
+        db.update_task_status(_task_id_str(task_id), status)
+        return
+    tid = _task_id_str(task_id)
+    from sqlalchemy import update as sa_update
+
+    from database.models import Task, TaskStatus
+    from database.session import SessionLocal
+
+    try:
+        st = TaskStatus(status)
+    except ValueError as e:
+        raise ValueError(f"invalid status: {status}") from e
+    with SessionLocal() as session:
+        session.execute(sa_update(Task).where(Task.id == uuid.UUID(tid)).values(status=st))
+        session.commit()
 
 
 def update_task_heartbeat(task_id: Union[int, str, uuid.UUID]) -> None:

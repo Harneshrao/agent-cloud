@@ -1,13 +1,11 @@
 """
-Core worker loop entry — delegates to `workers.execution_worker` reference loop.
-
-The full production worker remains `workers/worker.py` (DAG + idempotency); converge here over time.
+Core worker loop entry — delegates to the canonical production worker.
 """
 
 from __future__ import annotations
 
 
 def run_forever() -> None:
-    from workers.execution_worker import main
+    from workers.canonical_worker import main
 
     main()

@@ -4,6 +4,8 @@
 
 ## Setup
 
+**New here?** After setup, follow **[QUICKSTART.md](QUICKSTART.md)** for the 15-minute deploy → run → logs path.
+
 1. Install **Python 3.11** (e.g. from python.org or `pyenv install 3.11.9`).
 
 2. Run (Windows, from project root):

@@ -74,9 +74,21 @@ class Database:
         return self._engine
 
     def get_connection(self) -> CompatConnection:
-        """Legacy raw SQL (? placeholders). One long-lived connection per process."""
-        if self._compat_conn is None:
-            self._compat_conn = CompatConnection(self._engine.raw_connection())
+        """Legacy raw SQL (? placeholders). Self-heals poisoned transactions."""
+        if self._compat_conn is not None:
+            try:
+                self._compat_conn.rollback()
+                probe = self._compat_conn.cursor()
+                probe.execute("SELECT 1")
+                probe.fetchone()
+                return self._compat_conn
+            except Exception:
+                try:
+                    self._compat_conn.close()
+                except Exception:
+                    pass
+                self._compat_conn = None
+        self._compat_conn = CompatConnection(self._engine.raw_connection())
         return self._compat_conn
 
     def session(self) -> Session:

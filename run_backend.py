@@ -63,6 +63,34 @@ def require_sqlalchemy_or_exit() -> None:
         sys.exit(1)
 
 
+def warn_if_migration_drift() -> None:
+    """Print startup warning when DB is behind Alembic head or missing Wave 1 tables."""
+    if os.environ.get("SKIP_MIGRATION_CHECK", "").strip().lower() in ("1", "true", "yes"):
+        return
+    try:
+        from api.migration_check import (
+            get_db_revision,
+            get_head_revision,
+            missing_required_tables,
+        )
+
+        head = get_head_revision()
+        db_rev = get_db_revision()
+        missing = missing_required_tables()
+        if db_rev == head and not missing:
+            return
+        print("")
+        print("[run_backend] WARNING — database not ready for Wave 1 alpha testers:")
+        if db_rev != head:
+            print(f"  • Alembic drift: db={db_rev!r} head={head!r}")
+        if missing:
+            print(f"  • Missing tables: {', '.join(missing)}")
+        print("  Fix: alembic upgrade head")
+        print("")
+    except Exception as exc:
+        print(f"\n[run_backend] WARNING — migration check failed: {exc}\n", flush=True)
+
+
 apply_skip_migration_if_no_alembic()
 
 
@@ -76,6 +104,7 @@ def _port_in_use(port: int) -> bool:
 
 if __name__ == "__main__":
     require_sqlalchemy_or_exit()
+    warn_if_migration_drift()
 
     # 0.0.0.0 so both localhost and 127.0.0.1 work (avoids IPv6 localhost vs IPv4 server mismatch)
     # In Docker, set DISABLE_RELOAD=1 to avoid file watcher issues and reduce CPU

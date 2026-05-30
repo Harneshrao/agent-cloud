@@ -19,7 +19,7 @@ from database.task_graph import (
     insert_link,
     update_status,
 )
-from task_queue.task_queue import enqueue_task
+from services.task_service import enqueue_task
 
 # Maximum retries for a failed task before giving up.
 MAX_RETRIES = 3

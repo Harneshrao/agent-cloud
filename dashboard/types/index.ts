@@ -44,10 +44,41 @@ export interface WorkflowView {
 }
 
 export interface TaskListItem {
-  id: number;
-  task_text: string;
-  created_at?: string;
+  task_id: string;
   status?: string;
+  retry_count?: number;
+  worker_id?: string | null;
+  created_at?: string;
+  agent?: string;
+  deployment_id?: string;
+}
+
+export interface TaskTrace {
+  task: Record<string, unknown>;
+  events: Array<{
+    event_id: string;
+    event_type: string;
+    payload: Record<string, unknown>;
+    created_at?: string;
+  }>;
+  logs: Array<Record<string, unknown>>;
+  lifecycle_complete?: boolean;
+  expected_phases?: string[];
+}
+
+export interface DlqItem {
+  task_id: string;
+  error?: string;
+  retry_count?: number;
+  agent_name?: string;
+  created_at?: string;
+  task_payload?: string;
+}
+
+export interface IncidentItem {
+  severity: string;
+  code: string;
+  message: string;
 }
 
 export interface AgentStoreItem {
@@ -99,6 +130,28 @@ export interface MarketplaceAgent {
   capabilities: string[];
   popularity?: number;
   install_count?: number;
+}
+
+export interface DeploymentArtifact {
+  artifact_id: string;
+  project_id: string;
+  agent_name: string;
+  version: string;
+  status: string;
+  checksum_sha256: string;
+  created_at?: string;
+}
+
+export interface DeploymentRecord {
+  deployment_id: string;
+  project_id: string;
+  artifact_id: string;
+  agent_name: string;
+  version: string;
+  status: string;
+  configuration?: Record<string, unknown>;
+  activated_at?: string | null;
+  updated_at?: string;
 }
 
 export interface Installation {

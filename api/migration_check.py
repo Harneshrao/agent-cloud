@@ -4,6 +4,17 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
+from typing import List
+
+# Wave 1 tables required for unassisted alpha sessions
+WAVE1_REQUIRED_TABLES = (
+    "regions",
+    "api_keys",
+    "agent_deployments",
+    "agent_artifacts",
+    "tasks",
+    "product_events",
+)
 
 
 def get_head_revision() -> str:
@@ -59,6 +70,28 @@ def get_db_revision() -> str | None:
         ) from e
 
 
+def missing_required_tables(tables: tuple[str, ...] | None = None) -> List[str]:
+    """Return table names that are absent from public schema."""
+    names = tables or WAVE1_REQUIRED_TABLES
+    try:
+        from sqlalchemy import text
+
+        from database.session import engine
+    except ModuleNotFoundError as e:
+        raise RuntimeError("SQLAlchemy not installed") from e
+
+    missing: List[str] = []
+    with engine.connect() as conn:
+        for table in names:
+            row = conn.execute(
+                text("SELECT to_regclass(:name)"),
+                {"name": f"public.{table}"},
+            ).fetchone()
+            if row is None or row[0] is None:
+                missing.append(table)
+    return missing
+
+
 def assert_migrations_applied() -> None:
     if os.environ.get("SKIP_MIGRATION_CHECK", "").strip().lower() in ("1", "true", "yes"):
         return
@@ -68,4 +101,10 @@ def assert_migrations_applied() -> None:
         raise RuntimeError(
             f"Database migrations are not at head: alembic_version={db_rev!r}, "
             f"expected {head!r}. Run: alembic upgrade head"
+        )
+    missing = missing_required_tables()
+    if missing:
+        raise RuntimeError(
+            f"Database schema incomplete — missing tables: {', '.join(missing)}. "
+            "Run: alembic upgrade head"
         )

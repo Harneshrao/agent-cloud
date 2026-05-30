@@ -166,6 +166,7 @@ def get_system_health(admin=Depends(require_admin)) -> Dict[str, Any]:
         "docker_runtime": docker_runtime,
         "storage": storage_status,
         "dependency_cache": dep_cache_status,
+        "worker_health": get_worker_health(),
     }
 
 
@@ -215,9 +216,3 @@ def get_system_alerts() -> Dict[str, Any]:
     """Evaluate and return active alerts: queue backlog spikes, worker crash loops, high failure rate."""
     alerts = evaluate_alerts()
     return {"alerts": alerts, "count": len(alerts)}
-
-
-@router.get("/health")
-def get_system_health(admin=Depends(require_admin)) -> Dict[str, Any]:
-    """Worker health: heartbeat latency per worker and task failure rate."""
-    return get_worker_health()

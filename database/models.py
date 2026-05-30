@@ -452,6 +452,183 @@ class TaskRetry(Base):
     )
 
 
+class AgentArtifact(Base):
+    """Uploaded agent ZIP artifact (project-scoped)."""
+
+    __tablename__ = "agent_artifacts"
+    __table_args__ = (
+        UniqueConstraint(
+            "project_id",
+            "agent_name",
+            "version",
+            name="uq_agent_artifacts_project_agent_version",
+        ),
+        Index("idx_agent_artifacts_project", "project_id"),
+    )
+
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, server_default=func.gen_random_uuid()
+    )
+    project_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("projects.id", ondelete="CASCADE"), nullable=False
+    )
+    agent_name: Mapped[str] = mapped_column(Text, nullable=False)
+    version: Mapped[str] = mapped_column(Text, nullable=False)
+    storage_path: Mapped[str] = mapped_column(Text, nullable=False)
+    checksum_sha256: Mapped[str] = mapped_column(Text, nullable=False)
+    manifest: Mapped[dict[str, Any]] = mapped_column(
+        JSONB, nullable=False, server_default=text("'{}'::jsonb")
+    )
+    status: Mapped[str] = mapped_column(Text, nullable=False, server_default="uploaded")
+    validation_errors: Mapped[Optional[list[Any]]] = mapped_column(JSONB, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+
+
+class AgentDeployment(Base):
+    """Runtime deployment of an artifact version within a project."""
+
+    __tablename__ = "agent_deployments"
+    __table_args__ = (
+        Index("idx_agent_deployments_project", "project_id"),
+        Index("idx_agent_deployments_project_agent", "project_id", "agent_name"),
+    )
+
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, server_default=func.gen_random_uuid()
+    )
+    project_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("projects.id", ondelete="CASCADE"), nullable=False
+    )
+    artifact_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("agent_artifacts.id", ondelete="RESTRICT"),
+        nullable=False,
+    )
+    agent_name: Mapped[str] = mapped_column(Text, nullable=False)
+    version: Mapped[str] = mapped_column(Text, nullable=False)
+    status: Mapped[str] = mapped_column(Text, nullable=False, server_default="uploaded")
+    configuration: Mapped[dict[str, Any]] = mapped_column(
+        JSONB, nullable=False, server_default=text("'{}'::jsonb")
+    )
+    previous_deployment_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("agent_deployments.id", ondelete="SET NULL"),
+        nullable=True,
+    )
+    validation_errors: Mapped[Optional[list[Any]]] = mapped_column(JSONB, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+    activated_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+
+
+class UsageEvent(Base):
+    """Append-only billable / metered actions (canonical usage ledger)."""
+
+    __tablename__ = "usage_events"
+    __table_args__ = (
+        Index("idx_usage_events_project", "project_id"),
+        Index("idx_usage_events_project_type_created", "project_id", "event_type", "created_at"),
+    )
+
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, server_default=func.gen_random_uuid()
+    )
+    project_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("projects.id", ondelete="CASCADE"), nullable=False
+    )
+    event_type: Mapped[str] = mapped_column(Text, nullable=False)
+    quantity: Mapped[float] = mapped_column(REAL, nullable=False, server_default="1")
+    unit: Mapped[str] = mapped_column(Text, nullable=False, server_default="count")
+    task_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("tasks.id", ondelete="SET NULL"), nullable=True
+    )
+    deployment_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+        UUID(as_uuid=True), nullable=True
+    )
+    artifact_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+        UUID(as_uuid=True), nullable=True
+    )
+    api_key_id: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    event_metadata: Mapped[dict[str, Any]] = mapped_column(
+        "metadata",
+        JSONB,
+        nullable=False,
+        server_default=text("'{}'::jsonb"),
+    )
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+
+
+class ProductEvent(Base):
+    """Product analytics — activation funnel, onboarding, PMF signals (not billing)."""
+
+    __tablename__ = "product_events"
+    __table_args__ = (
+        Index("idx_product_events_name_created", "event_name", "created_at"),
+        Index("idx_product_events_user_created", "user_id", "created_at"),
+        Index("idx_product_events_project_created", "project_id", "created_at"),
+        Index("idx_product_events_session", "session_id"),
+    )
+
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, server_default=func.gen_random_uuid()
+    )
+    event_name: Mapped[str] = mapped_column(Text, nullable=False)
+    user_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("users.id", ondelete="SET NULL"), nullable=True
+    )
+    project_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("projects.id", ondelete="SET NULL"), nullable=True
+    )
+    deployment_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+        UUID(as_uuid=True), nullable=True
+    )
+    task_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+        UUID(as_uuid=True), nullable=True
+    )
+    session_id: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    onboarding_step: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    source: Mapped[str] = mapped_column(Text, nullable=False, server_default="client")
+    properties: Mapped[dict[str, Any]] = mapped_column(
+        JSONB, nullable=False, server_default=text("'{}'::jsonb")
+    )
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+
+
+class DeploymentEvent(Base):
+    """Append-only deployment lifecycle events."""
+
+    __tablename__ = "deployment_events"
+    __table_args__ = (Index("idx_deployment_events_deployment", "deployment_id"),)
+
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, server_default=func.gen_random_uuid()
+    )
+    deployment_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("agent_deployments.id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    event_type: Mapped[str] = mapped_column(Text, nullable=False)
+    payload: Mapped[dict[str, Any]] = mapped_column(
+        JSONB, nullable=False, server_default=text("'{}'::jsonb")
+    )
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+
+
 def _parse_uuid(value: Any) -> uuid.UUID:
     if isinstance(value, uuid.UUID):
         return value

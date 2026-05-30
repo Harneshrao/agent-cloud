@@ -35,7 +35,7 @@ from database.template_versions import resolve_dag_for_run
 from engine.template_runner import _parse_dag, _substitute_inputs
 
 try:
-    from task_queue.redis_queue import push_existing_task as _enqueue_existing_task
+    from services.task_service import push_existing_task as _enqueue_existing_task
 except Exception:
     def _enqueue_existing_task(_tid: uuid.UUID, _text: str) -> None:
         pass  # DB queue: task already pending
