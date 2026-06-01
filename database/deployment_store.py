@@ -132,6 +132,21 @@ def get_artifact_for_project(
     return art
 
 
+def find_artifact_by_agent_version(
+    project_id: uuid.UUID, agent_name: str, version: str
+) -> Optional[Dict[str, Any]]:
+    """Look up an existing artifact by the (project, agent, version) unique key."""
+    with SessionLocal() as session:
+        row = session.execute(
+            select(AgentArtifact).where(
+                AgentArtifact.project_id == project_id,
+                AgentArtifact.agent_name == agent_name,
+                AgentArtifact.version == version,
+            )
+        ).scalar_one_or_none()
+        return _artifact_dict(row) if row else None
+
+
 def create_deployment(
     project_id: uuid.UUID,
     artifact_id: uuid.UUID,

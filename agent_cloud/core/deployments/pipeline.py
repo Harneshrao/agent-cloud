@@ -72,6 +72,12 @@ def upload_artifact(
         if not version:
             version = "0.0.1"
 
+        # Re-uploading the same agent+version is idempotent: return the existing
+        # validated artifact instead of letting the unique constraint raise a 500.
+        existing = store.find_artifact_by_agent_version(project_id, agent_name, version)
+        if existing is not None:
+            return existing
+
         _, checksum = save_artifact_bytes(project_id, artifact_id, zip_bytes)
         rel_path = storage_path_relative(project_id, artifact_id)
 

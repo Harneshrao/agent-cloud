@@ -203,8 +203,14 @@ def loop_once() -> bool:
         try:
             task = claim_task_running(tid_str)
             if task is None:
-                _trace(task_uuid, "claim_skipped", {})
-                q.lpush_raw(raw)
+                # Not claimable: task is terminal (completed/failed/dead) or already
+                # running on another worker. Re-pushing it would hot-loop the queue
+                # (poison task), so drop the stale id instead of re-enqueueing.
+                _trace(
+                    task_uuid,
+                    "claim_skipped",
+                    {"status": str((row or {}).get("status") or "unknown")},
+                )
                 return True
             _trace(task_uuid, "claimed", {"worker_id": os.environ.get("WORKER_ID")})
             Metrics.inc(Metrics.TASK_CLAIMED)
