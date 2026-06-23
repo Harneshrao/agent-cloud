@@ -29,6 +29,7 @@ type ActiveProjectContextValue = {
   hasProject: boolean;
   loadError: PlatformErrorView | null;
   setProject: (id: string) => void;
+  syncProjectId: (id: string) => void;
   refreshProjects: () => Promise<void>;
   ensureProject: () => string | null;
 };
@@ -38,6 +39,12 @@ const ActiveProjectContext = createContext<ActiveProjectContextValue | null>(nul
 function readStoredProjectId(): string {
   if (typeof window === "undefined") return "";
   return getActiveProjectId();
+}
+
+function clearInvalidStoredProject(stored: string, list: Project[]): void {
+  if (!stored) return;
+  if (list.some((p) => p.id === stored)) return;
+  clearActiveProjectId();
 }
 
 export function ActiveProjectProvider({ children }: { children: React.ReactNode }) {
@@ -55,6 +62,7 @@ export function ActiveProjectProvider({ children }: { children: React.ReactNode 
       const stored = getActiveProjectId();
       const valid = list.find((p) => p.id === stored);
       if (valid) {
+        setActiveProjectId(valid.id);
         setProjectId(valid.id);
         markOnboardingStep("project");
       } else if (list.length === 1) {
@@ -91,23 +99,36 @@ export function ActiveProjectProvider({ children }: { children: React.ReactNode 
   }, [refreshProjects]);
 
   const setProject = useCallback((id: string) => {
-    setActiveProjectId(id);
-    setProjectId(id);
+    const next = id.trim();
+    setActiveProjectId(next);
+    setProjectId(next);
     markOnboardingStep("project");
     import("@/lib/analytics")
       .then(({ trackProductEvent }) => {
-        trackProductEvent("project_selected", { properties: { project_id: id } });
+        trackProductEvent("project_selected", { properties: { project_id: next } });
       })
       .catch(() => {});
   }, []);
+
+  const syncProjectId = useCallback((id: string) => {
+    const next = id.trim();
+    if (!next || next === projectId) return;
+    setActiveProjectId(next);
+    setProjectId(next);
+  }, [projectId]);
 
   const projectName = useMemo(
     () => projects.find((p) => p.id === projectId)?.name ?? "",
     [projects, projectId]
   );
 
+  const storedId = typeof window !== "undefined" ? getActiveProjectId() : "";
+  const hasProject = Boolean(projectId) || Boolean(storedId);
+
   const ensureProject = useCallback(() => {
     if (projectId) return projectId;
+    const stored = getActiveProjectId();
+    if (stored) return stored;
     return null;
   }, [projectId]);
 
@@ -117,9 +138,10 @@ export function ActiveProjectProvider({ children }: { children: React.ReactNode 
     projects,
     loading,
     ready: !loading,
-    hasProject: Boolean(projectId),
+    hasProject,
     loadError,
     setProject,
+    syncProjectId,
     refreshProjects,
     ensureProject,
   };

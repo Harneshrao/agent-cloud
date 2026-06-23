@@ -10,6 +10,13 @@ export function getActiveProjectId(): string {
   return localStorage.getItem(PROJECT_KEY) || "";
 }
 
+/** Resolve project for API calls: explicit > localStorage. */
+export function resolveActiveProjectId(explicit?: string | null): string {
+  const fromArg = (explicit ?? "").trim();
+  if (fromArg) return fromArg;
+  return getActiveProjectId().trim();
+}
+
 export function setActiveProjectId(projectId: string): void {
   if (typeof window === "undefined") return;
   localStorage.setItem(PROJECT_KEY, projectId);

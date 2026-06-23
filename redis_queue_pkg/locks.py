@@ -5,26 +5,32 @@ from typing import Optional, Union
 import redis
 
 from config.redis_keys import lock_task_key
-from config.settings import REDIS_URL
-
-_redis: Optional[redis.Redis] = None
+from redis_queue_pkg.redis_client import get_redis_client, redis_execute
 
 
 def _client() -> redis.Redis:
-    global _redis
-    if _redis is None:
-        _redis = redis.from_url(REDIS_URL, decode_responses=True)
-    return _redis
+    return get_redis_client()
 
 
 def acquire_task_lock(task_id: Union[str, int], ttl_s: int = 300) -> bool:
     key = lock_task_key(str(task_id))
-    return bool(_client().set(key, "1", nx=True, ex=ttl_s))
+
+    def _acquire(r: redis.Redis) -> bool:
+        return bool(r.set(key, "1", nx=True, ex=ttl_s))
+
+    return bool(redis_execute(_acquire))
 
 
 def release_task_lock(task_id: Union[str, int]) -> None:
     key = lock_task_key(str(task_id))
-    _client().delete(key)
+
+    def _release(r: redis.Redis) -> None:
+        r.delete(key)
+
+    try:
+        redis_execute(_release)
+    except Exception:
+        pass
 
 
 def try_idempotency_marker(task_id: Union[str, int], ttl_s: int = 86400) -> bool:
@@ -32,4 +38,8 @@ def try_idempotency_marker(task_id: Union[str, int], ttl_s: int = 86400) -> bool
     from config.redis_keys import idempotency_key
 
     k = idempotency_key(str(task_id))
-    return bool(_client().set(k, "1", nx=True, ex=ttl_s))
+
+    def _mark(r: redis.Redis) -> bool:
+        return bool(r.set(k, "1", nx=True, ex=ttl_s))
+
+    return bool(redis_execute(_mark))

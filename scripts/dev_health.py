@@ -273,10 +273,43 @@ def check_redis_direct() -> CheckResult:
         from services.health_checks import probe_redis
 
         ok, detail = probe_redis()
-        hint = "" if ok else "Start: docker compose up -d redis"
+        hint = "" if ok else "Start: docker compose up -d redis  (use REDIS_URL=redis://127.0.0.1:6379/0 on Windows)"
         return CheckResult("Redis", ok, detail, hint)
     except Exception as e:
         return CheckResult("Redis", False, str(e)[:120], "Start: docker compose up -d redis")
+
+
+def check_redis_deep() -> CheckResult:
+    try:
+        from services.health_checks import probe_redis_deep
+
+        ok, detail = probe_redis_deep()
+        hint = "" if ok else "py -3.11 scripts/check_redis.py  — ensure 127.0.0.1 not localhost"
+        return CheckResult("Redis deep health", ok, detail, hint)
+    except Exception as e:
+        return CheckResult("Redis deep health", False, str(e)[:120])
+
+
+def check_queue_health() -> CheckResult:
+    try:
+        from services.health_checks import probe_queue_health
+
+        ok, detail = probe_queue_health()
+        hint = "" if ok else "Restart redis + worker after docker compose restart redis"
+        return CheckResult("Queue health", ok, detail, hint)
+    except Exception as e:
+        return CheckResult("Queue health", False, str(e)[:120])
+
+
+def check_redis_worker_heartbeat() -> CheckResult:
+    try:
+        from services.health_checks import probe_redis_worker_heartbeat
+
+        ok, detail = probe_redis_worker_heartbeat(within_seconds=60)
+        hint = "" if ok else "Start: py -3.11 -m workers.canonical_worker"
+        return CheckResult("Worker heartbeat (Redis)", ok, detail, hint)
+    except Exception as e:
+        return CheckResult("Worker heartbeat (Redis)", False, str(e)[:120])
 
 
 def check_api(api_base: Optional[str] = None) -> CheckResult:
@@ -400,6 +433,8 @@ def run_preflight_checks(*, include_deep: bool = False) -> List[CheckResult]:
     results = [
         check_postgres_direct(),
         check_redis_direct(),
+        check_redis_deep(),
+        check_queue_health(),
         check_api(api_base),
     ]
     if include_deep:
@@ -408,6 +443,7 @@ def run_preflight_checks(*, include_deep: bool = False) -> List[CheckResult]:
         [
             check_dashboard(),
             check_workers(),
+            check_redis_worker_heartbeat(),
             check_projects(api_base),
             check_deployments(api_base),
         ]

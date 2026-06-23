@@ -47,16 +47,58 @@ def probe_postgres() -> Tuple[bool, str]:
 
 
 def probe_redis() -> Tuple[bool, str]:
-    from config.settings import REDIS_URL
-
     def _ping() -> Tuple[bool, str]:
-        import redis
+        from redis_queue_pkg.redis_client import make_redis_client
 
-        client = redis.from_url(REDIS_URL, socket_connect_timeout=2, socket_timeout=2)
+        client = make_redis_client()
         client.ping()
         return True, "ok"
 
     return _run_bounded(_ping)
+
+
+def probe_redis_deep() -> Tuple[bool, str]:
+    """Ping + set/get + BRPOP (same as scripts/check_redis.py)."""
+
+    def _deep() -> Tuple[bool, str]:
+        from scripts.check_redis import run_checks
+
+        ok, lines = run_checks()
+        detail = "; ".join(lines[1:4]) if len(lines) > 1 else ("ok" if ok else "failed")
+        return ok, detail[:200]
+
+    return _run_bounded(_deep, timeout=8.0)
+
+
+def probe_queue_health() -> Tuple[bool, str]:
+    def _queue() -> Tuple[bool, str]:
+        from redis_queue_pkg.redis_queue import get_task_queue
+
+        q = get_task_queue()
+        depth = q.queue_depth_ready()
+        test_key = "queue:healthcheck:brpop"
+
+        def _smoke(r):
+            r.delete(test_key)
+            r.lpush(test_key, "1")
+            item = r.brpop(test_key, timeout=2)
+            if not item:
+                raise RuntimeError("BRPOP returned nothing")
+            return item
+
+        q._run(_smoke)
+        return True, f"ready_depth={depth}"
+
+    return _run_bounded(_queue, timeout=8.0)
+
+
+def probe_redis_worker_heartbeat(within_seconds: int = 60) -> Tuple[bool, str]:
+    def _hb() -> Tuple[bool, str]:
+        from redis_queue_pkg.redis_client import any_worker_redis_heartbeat
+
+        return any_worker_redis_heartbeat(within_sec=within_seconds)
+
+    return _run_bounded(_hb)
 
 
 def probe_workers(within_seconds: int = 60) -> Tuple[bool, str]:
@@ -108,6 +150,15 @@ def component_status(
 
     ok, detail = probe_redis()
     out["redis"] = "ok" if ok else detail
+
+    ok, detail = probe_redis_deep()
+    out["redis_deep"] = "ok" if ok else detail
+
+    ok, detail = probe_queue_health()
+    out["queue"] = "ok" if ok else detail
+
+    ok, detail = probe_redis_worker_heartbeat(within_seconds=worker_within_seconds)
+    out["worker_redis_heartbeat"] = "ok" if ok else detail
 
     if include_workers:
         ok, detail = probe_workers(within_seconds=worker_within_seconds)

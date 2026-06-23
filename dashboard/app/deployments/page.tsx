@@ -27,8 +27,11 @@ import { GlassCard } from "@/components/product/glass-card";
 import { Button } from "@/components/ui/button";
 import { usePlatformState } from "@/context/platform-state";
 import { SUCCESS_MESSAGES } from "@/lib/trust-copy";
+import { taskTraceHref } from "@/lib/trace-navigation";
+import { useActiveProject } from "@/context/active-project";
 
 export default function DeploymentsPage() {
+  const { projectId } = useActiveProject();
   const { apiReady, checkHealth } = usePlatformState();
   const [deployments, setDeployments] = useState<DeploymentRecord[]>([]);
   const [artifacts, setArtifacts] = useState<DeploymentArtifact[]>([]);
@@ -43,11 +46,11 @@ export default function DeploymentsPage() {
   const [rollbackOk, setRollbackOk] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (bustCache = false) => {
     setError(null);
     try {
       const [d, a, tasks] = await Promise.all([
-        fetchDeployments(),
+        fetchDeployments(bustCache),
         fetchDeploymentArtifacts(),
         fetchObservabilityTasks(8).catch(() => ({ tasks: [] as TaskListItem[] })),
       ]);
@@ -65,14 +68,33 @@ export default function DeploymentsPage() {
     load();
   }, [load]);
 
+  const sortByRecency = (a: DeploymentRecord, b: DeploymentRecord) =>
+    (b.activated_at ?? b.updated_at ?? "").localeCompare(
+      a.activated_at ?? a.updated_at ?? ""
+    );
+
   const primaryDeployment = useMemo(() => {
-    const active = deployments.filter((d) => d.status === "active");
+    const active = deployments
+      .filter((d) => d.status === "active")
+      .sort(sortByRecency);
     if (highlightId) {
-      const h = deployments.find((d) => d.deployment_id === highlightId);
-      if (h) return h;
+      const highlighted = active.find((d) => d.deployment_id === highlightId);
+      if (highlighted) return highlighted;
     }
-    return active[0] ?? deployments[0] ?? null;
+    return active[0] ?? null;
   }, [deployments, highlightId]);
+
+  const otherDeployments = useMemo(() => {
+    const primaryId = primaryDeployment?.deployment_id;
+    return deployments
+      .filter((d) => d.deployment_id !== primaryId)
+      .sort((a, b) => {
+        const rank = (s: string) => (s === "active" ? 0 : s === "failed" ? 1 : 2);
+        const diff = rank(a.status) - rank(b.status);
+        if (diff !== 0) return diff;
+        return sortByRecency(a, b);
+      });
+  }, [deployments, primaryDeployment]);
 
   const hasLiveAgent = deployments.some((d) => d.status === "active");
   const errorView = error ? toPlatformError(error) : null;
@@ -90,7 +112,7 @@ export default function DeploymentsPage() {
       const dep = await deployArtifact(res.artifact.artifact_id);
       markOnboardingStep("deployed");
       setHighlightId(dep.deployment?.deployment_id ?? null);
-      await load();
+      await load(true);
     } catch (e) {
       setError(e);
     } finally {
@@ -106,7 +128,7 @@ export default function DeploymentsPage() {
       const res = await deployOnboardingSample(name);
       markOnboardingStep("deployed");
       setHighlightId(res.deployment.deployment_id);
-      await load();
+      await load(true);
     } catch (e) {
       setError(e);
     } finally {
@@ -121,7 +143,7 @@ export default function DeploymentsPage() {
       const res = await runDeployment(depId, { message: "hello from Agent Cloud" });
       markOnboardingStep("ran");
       if (res.task_id) {
-        window.location.href = `/tasks/${res.task_id}`;
+        window.location.href = taskTraceHref(res.task_id, projectId);
         return;
       }
       await load();
@@ -136,7 +158,7 @@ export default function DeploymentsPage() {
     try {
       await rollbackDeployment(depId);
       setRollbackOk(true);
-      await load();
+      await load(true);
     } catch (e) {
       setError(e);
     } finally {
@@ -222,17 +244,18 @@ export default function DeploymentsPage() {
               />
             ) : null}
 
-            {deployments.length > 1 ? (
+            {otherDeployments.length > 0 ? (
               <GlassCard className="overflow-hidden">
                 <div className="border-b border-white/5 px-6 py-3">
-                  <h3 className="text-sm font-medium text-neutral-300">Other agents</h3>
-                  <p className="text-xs text-neutral-500">Run tasks on another version</p>
+                  <h3 className="text-sm font-medium text-neutral-300">Previous versions</h3>
+                  <p className="text-xs text-neutral-500">Older deployments for this project</p>
                 </div>
                 <ul className="divide-y divide-white/5">
-                  {deployments.map((d) => (
+                  {otherDeployments.map((d) => (
                     <DeploymentRow
                       key={d.deployment_id}
                       deployment={d}
+                      allDeployments={deployments}
                       highlighted={d.deployment_id === highlightId}
                       running={actionId === d.deployment_id}
                       onRun={() => onRun(d.deployment_id)}

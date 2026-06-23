@@ -85,6 +85,19 @@ async def _lifespan(_app: FastAPI):
 
     assert_production_safety()
     assert_migrations_applied()
+    try:
+        from database.deployment_legacy_repair import repair_all_projects_once
+
+        repaired = repair_all_projects_once()
+        if repaired:
+            logging.getLogger("uvicorn.error").info(
+                "Legacy deployment repair: %s row(s) rolled_back -> superseded",
+                repaired,
+            )
+    except Exception:
+        logging.getLogger("uvicorn.error").exception(
+            "Legacy deployment status repair skipped (non-fatal)"
+        )
     logging.getLogger("uvicorn.error").info(
         "PostgreSQL OK: DATABASE_URL loaded from environment; migration check passed."
     )

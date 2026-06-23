@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import sys
 from pathlib import Path
 
 # Load repo-root .env before reading DATABASE_URL (does not override existing env vars).
@@ -30,8 +31,10 @@ DEFAULT_PROJECT_UUID = os.environ.get(
     "DEFAULT_PROJECT_UUID", "00000000-0000-4000-8000-000000000002"
 )
 
-# Redis — queue, scheduling, locks
-REDIS_URL = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
+# Redis — queue, scheduling, locks (127.0.0.1 default: stable on Windows Docker)
+REDIS_URL = os.environ.get("REDIS_URL", "redis://127.0.0.1:6379/0")
+if sys.platform == "win32" and "localhost" in REDIS_URL:
+    REDIS_URL = REDIS_URL.replace("localhost", "127.0.0.1")
 
 # Comma-separated list, e.g. https://app.example.com,https://staging.example.com
 # Empty → API defaults to http://localhost:3000 for local dev only (set explicit origins in prod).

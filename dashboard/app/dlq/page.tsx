@@ -5,7 +5,8 @@ import Link from "next/link";
 import { AlertTriangle } from "lucide-react";
 import { trackProductEvent } from "@/lib/analytics";
 import { fetchObservabilityDlq } from "@/lib/api";
-import { friendlyApiError } from "@/lib/project-messages";
+import { taskTraceHref } from "@/lib/trace-navigation";
+import { useActiveProject } from "@/context/active-project";
 import type { DlqItem } from "@/types";
 import { EmptyState } from "@/components/product/empty-state";
 import { ProjectGate } from "@/components/product/project-gate";
@@ -13,6 +14,7 @@ import { GlassCard } from "@/components/product/glass-card";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function DlqPage() {
+  const { projectId } = useActiveProject();
   const [items, setItems] = useState<DlqItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -22,7 +24,7 @@ export default function DlqPage() {
     let cancelled = false;
     (async () => {
       try {
-        const res = await fetchObservabilityDlq();
+        const res = await fetchObservabilityDlq(50, projectId || undefined);
         if (!cancelled) setItems(res.dead_letters ?? []);
       } catch (e) {
         if (!cancelled) {
@@ -81,7 +83,7 @@ export default function DlqPage() {
                         <p className="text-sm text-neutral-500">Task failed after retries</p>
                       </div>
                       <Link
-                        href={`/tasks/${item.task_id}`}
+                        href={taskTraceHref(item.task_id, projectId)}
                         className="text-sm font-medium text-primary hover:underline"
                       >
                         View trace & logs
@@ -92,7 +94,7 @@ export default function DlqPage() {
                     </p>
                     <p className="mt-3 flex flex-wrap gap-3 text-sm">
                       <Link
-                        href={`/tasks/${item.task_id}`}
+                        href={taskTraceHref(item.task_id, projectId)}
                         className="font-medium text-primary hover:underline"
                       >
                         View trace
