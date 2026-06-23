@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import json
 import uuid
-import psycopg2
 from datetime import datetime
 from typing import Any, Dict, Optional, Tuple, Union
 
@@ -59,20 +58,23 @@ def try_claim(
     conn = db.get_connection()
     cur = conn.cursor()
     now = datetime.utcnow()
-    try:
-        cur.execute(
-            """
-            INSERT INTO task_idempotency (idempotency_key, task_id, status, result, created_at)
-            VALUES (?, ?, 'running', NULL, ?)
-            """,
-            (idempotency_key, tid, now),
-        )
+    # ON CONFLICT keeps this a single round-trip and (critically) makes pg_compat
+    # skip its SELECT lastval() probe — task_idempotency has a non-serial PK, so the
+    # probe errors and aborts the transaction, silently dropping the claim row.
+    cur.execute(
+        """
+        INSERT INTO task_idempotency (idempotency_key, task_id, status, result, created_at)
+        VALUES (?, ?, 'running', NULL, ?)
+        ON CONFLICT (idempotency_key) DO NOTHING
+        """,
+        (idempotency_key, tid, now),
+    )
+    if cur.rowcount == 0:
         conn.commit()
-        return (True, None)
-    except psycopg2.IntegrityError:
-        conn.rollback()
         row = get_record(idempotency_key)
         return (False, row["status"] if row else None)
+    conn.commit()
+    return (True, None)
 
 
 def set_completed(idempotency_key: str, result: Any = None) -> None:

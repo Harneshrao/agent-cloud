@@ -20,6 +20,7 @@ class DeploymentState(str, Enum):
     active = "active"
     failed = "failed"
     rolled_back = "rolled_back"
+    superseded = "superseded"
     archived = "archived"
 
 

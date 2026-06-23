@@ -20,7 +20,14 @@ import uuid
 
 from database.db import db
 from database.task_idempotency import delete_record, get_result, set_completed, try_claim
+from redis.exceptions import ConnectionError as RedisConnectionError
+from redis.exceptions import TimeoutError as RedisTimeoutError
+
 from redis_queue_pkg.locks import acquire_task_lock, release_task_lock
+from redis_queue_pkg.redis_client import (
+    reset_redis_client,
+    write_worker_redis_heartbeat,
+)
 from redis_queue_pkg.redis_queue import TaskQueue, get_task_queue
 from services.task_payload import parse_payload
 from services.task_service import (
@@ -102,6 +109,53 @@ def _visibility_ms() -> int:
 
 def _block_timeout() -> int:
     return int(os.environ.get("REDIS_QUEUE_BLOCK_TIMEOUT", "30"))
+
+
+_MAX_REQUEUE_BEFORE_DLQ = int(os.environ.get("MAX_REQUEUE_BEFORE_DLQ", "3"))
+
+
+def _worker_id() -> str:
+    return (os.environ.get("WORKER_ID") or "worker-unknown").strip()
+
+
+def _resume_worker_heartbeat() -> None:
+    try:
+        write_worker_redis_heartbeat(_worker_id(), tasks_running=0, ttl_sec=60)
+        log.info("Worker resumed", extra={"worker_id": _worker_id()})
+    except Exception:
+        pass
+
+
+def _requeue_or_dlq(
+    q: TaskQueue,
+    tid_str: str,
+    raw: str,
+    *,
+    reason: str,
+) -> bool:
+    """
+    Re-queue task id. If requeued too many times, send to DLQ and mark failed.
+    Returns True if the item was dropped (DLQ), False if re-queued.
+    """
+    n = q.increment_requeue_count(tid_str)
+    if n > _MAX_REQUEUE_BEFORE_DLQ:
+        err = f"requeue limit exceeded ({reason})"
+        log.warning(
+            "queue poison — moving to DLQ",
+            extra={"task_id": tid_str, "requeue_count": n, "reason": reason},
+        )
+        try:
+            q.to_dead_letter(tid_str, err)
+        except Exception:
+            pass
+        try:
+            update_task_status(uuid.UUID(tid_str), "failed")
+        except Exception:
+            pass
+        q.clear_requeue_count(tid_str)
+        return True
+    q.lpush_raw(raw)
+    return False
 
 
 def _run_executor(task_dict: dict) -> object:
@@ -189,7 +243,7 @@ def loop_once() -> bool:
         worker_region=region,
         worker_type=wtype,
     ):
-        q.lpush_raw(raw)
+        _requeue_or_dlq(q, tid_str, raw, reason="worker_filter")
         return True
 
     t0 = time.perf_counter()
@@ -198,14 +252,21 @@ def loop_once() -> bool:
             tid_str, ttl_s=int(float(os.environ.get("LOCK_TTL_SEC", "300")))
         ):
             _trace(task_uuid, "lock_denied", {})
-            q.lpush_raw(raw)
+            _requeue_or_dlq(q, tid_str, raw, reason="lock_denied")
             return True
         try:
             task = claim_task_running(tid_str)
             if task is None:
-                _trace(task_uuid, "claim_skipped", {})
-                q.lpush_raw(raw)
+                # Not claimable: task is terminal (completed/failed/dead) or already
+                # running on another worker. Re-pushing it would hot-loop the queue
+                # (poison task), so drop the stale id instead of re-enqueueing.
+                _trace(
+                    task_uuid,
+                    "claim_skipped",
+                    {"status": str((row or {}).get("status") or "unknown")},
+                )
                 return True
+            q.clear_requeue_count(tid_str)
             _trace(task_uuid, "claimed", {"worker_id": os.environ.get("WORKER_ID")})
             Metrics.inc(Metrics.TASK_CLAIMED)
 
@@ -337,12 +398,24 @@ def loop_once() -> bool:
 def main() -> None:
     log.info(
         "guaranteed_loop started",
-        extra={"worker_id": os.environ.get("WORKER_ID")},
+        extra={"worker_id": _worker_id()},
     )
+    _resume_worker_heartbeat()
     while True:
         try:
             if not loop_once():
                 time.sleep(0.5)
+        except (RedisConnectionError, RedisTimeoutError, ConnectionResetError) as e:
+            log.warning(
+                "redis disconnected reconnecting",
+                extra={"worker_id": _worker_id(), "error": str(e)},
+            )
+            try:
+                reset_redis_client()
+            except Exception:
+                log.exception("redis reconnect failed")
+            _resume_worker_heartbeat()
+            time.sleep(1.0)
         except Exception as e:
             log.exception("loop error", extra={"error": str(e)})
             time.sleep(1.0)

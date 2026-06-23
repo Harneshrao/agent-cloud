@@ -8,7 +8,7 @@ import uuid
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
-from sqlalchemy import desc, select, update
+from sqlalchemy import case, desc, select, update
 
 from database.models import AgentArtifact, AgentDeployment, DeploymentEvent
 from database.session import SessionLocal
@@ -39,13 +39,15 @@ def _artifact_dict(a: AgentArtifact) -> Dict[str, Any]:
 def _deployment_dict(d: AgentDeployment, *, redact_secrets: bool = True) -> Dict[str, Any]:
     raw_config = d.configuration or {}
     config = redact_configuration(raw_config) if redact_secrets else dict(raw_config)
+    status = d.status or "uploaded"
     return {
         "deployment_id": str(d.id),
         "project_id": str(d.project_id),
         "artifact_id": str(d.artifact_id),
         "agent_name": d.agent_name,
         "version": d.version,
-        "status": d.status,
+        "status": status,
+        "active": status == "active",
         "configuration": config,
         "previous_deployment_id": (
             str(d.previous_deployment_id) if d.previous_deployment_id else None
@@ -90,6 +92,7 @@ def update_artifact(
     status: Optional[str] = None,
     validation_errors: Optional[list] = None,
     manifest: Optional[dict] = None,
+    checksum_sha256: Optional[str] = None,
 ) -> Optional[Dict[str, Any]]:
     with SessionLocal() as session:
         row = session.get(AgentArtifact, artifact_id)
@@ -101,6 +104,8 @@ def update_artifact(
             row.validation_errors = validation_errors
         if manifest is not None:
             row.manifest = manifest
+        if checksum_sha256 is not None:
+            row.checksum_sha256 = checksum_sha256
         session.commit()
         session.refresh(row)
         return _artifact_dict(row)
@@ -130,6 +135,21 @@ def get_artifact_for_project(
     if art is None or art["project_id"] != str(project_id):
         return None
     return art
+
+
+def find_artifact_by_agent_version(
+    project_id: uuid.UUID, agent_name: str, version: str
+) -> Optional[Dict[str, Any]]:
+    """Look up an existing artifact by the (project, agent, version) unique key."""
+    with SessionLocal() as session:
+        row = session.execute(
+            select(AgentArtifact).where(
+                AgentArtifact.project_id == project_id,
+                AgentArtifact.agent_name == agent_name,
+                AgentArtifact.version == version,
+            )
+        ).scalar_one_or_none()
+        return _artifact_dict(row) if row else None
 
 
 def create_deployment(
@@ -204,11 +224,19 @@ def get_deployment_for_project(
 def list_deployments(
     project_id: uuid.UUID, agent_name: Optional[str] = None
 ) -> List[Dict[str, Any]]:
+    from database.deployment_legacy_repair import repair_promotion_rolled_back_rows
+
     with SessionLocal() as session:
+        repair_promotion_rolled_back_rows(session, project_id=project_id)
+        session.commit()
         q = select(AgentDeployment).where(AgentDeployment.project_id == project_id)
         if agent_name:
             q = q.where(AgentDeployment.agent_name == agent_name)
-        q = q.order_by(desc(AgentDeployment.updated_at))
+        q = q.order_by(
+            case((AgentDeployment.status == "active", 0), else_=1),
+            desc(AgentDeployment.activated_at),
+            desc(AgentDeployment.updated_at),
+        )
         return [_deployment_dict(r) for r in session.scalars(q).all()]
 
 
@@ -232,7 +260,7 @@ def find_active_deployment(
 def supersede_active_deployments(
     project_id: uuid.UUID, agent_name: str, exclude_id: uuid.UUID
 ) -> int:
-    """Mark other active deployments for this agent as rolled_back."""
+    """Mark other active deployments for this agent as superseded (version promotion)."""
     now = datetime.now(timezone.utc)
     with SessionLocal() as session:
         result = session.execute(
@@ -243,10 +271,40 @@ def supersede_active_deployments(
                 AgentDeployment.status == "active",
                 AgentDeployment.id != exclude_id,
             )
-            .values(status="rolled_back", updated_at=now)
+            .values(status="superseded", updated_at=now)
         )
         session.commit()
         return int(result.rowcount or 0)
+
+
+def restore_previous_active(
+    project_id: uuid.UUID,
+    agent_name: str,
+    previous_id: uuid.UUID,
+) -> Optional[Dict[str, Any]]:
+    """Re-activate a prior deployment after a failed promotion (failure rollback)."""
+    now = datetime.now(timezone.utc)
+    with SessionLocal() as session:
+        session.execute(
+            update(AgentDeployment)
+            .where(
+                AgentDeployment.project_id == project_id,
+                AgentDeployment.agent_name == agent_name,
+                AgentDeployment.status == "active",
+                AgentDeployment.id != previous_id,
+            )
+            .values(status="superseded", updated_at=now)
+        )
+        row = session.get(AgentDeployment, previous_id)
+        if row is None:
+            session.commit()
+            return None
+        row.status = "active"
+        row.activated_at = now
+        row.updated_at = now
+        session.commit()
+        session.refresh(row)
+        return _deployment_dict(row)
 
 
 def append_deployment_event(

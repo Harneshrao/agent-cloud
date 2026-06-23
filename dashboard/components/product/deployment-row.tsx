@@ -4,25 +4,27 @@ import Link from "next/link";
 import { PlayCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
-  deploymentStatusLabel,
-  deploymentStatusTone,
+  deploymentDisplayLabel,
+  deploymentDisplayTone,
 } from "@/lib/trust-copy";
 import type { DeploymentRecord } from "@/types";
 
 export function DeploymentRow({
   deployment,
+  allDeployments,
   highlighted,
   running,
   onRun,
   onRollback,
 }: {
   deployment: DeploymentRecord;
+  allDeployments: DeploymentRecord[];
   highlighted?: boolean;
   running: boolean;
   onRun: () => void;
   onRollback: () => void;
 }) {
-  const tone = deploymentStatusTone(deployment.status);
+  const tone = deploymentDisplayTone(deployment, allDeployments);
   const isActive = deployment.status === "active";
 
   const statusClass =
@@ -44,7 +46,7 @@ export function DeploymentRow({
           <span className="text-neutral-500">v{deployment.version}</span>
         </div>
         <p className={`mt-0.5 text-sm ${statusClass}`}>
-          {deploymentStatusLabel(deployment.status)}
+          {deploymentDisplayLabel(deployment, allDeployments)}
         </p>
       </div>
 
@@ -68,14 +70,16 @@ export function DeploymentRow({
         >
           Runs
         </Link>
-        <button
-          type="button"
-          className="rounded-lg px-3 py-1.5 text-sm text-neutral-500 hover:bg-white/5 hover:text-neutral-300 disabled:opacity-40"
-          disabled={running}
-          onClick={onRollback}
-        >
-          Restore previous
-        </button>
+        {isActive ? (
+          <button
+            type="button"
+            className="rounded-lg px-3 py-1.5 text-sm text-neutral-500 hover:bg-white/5 hover:text-neutral-300 disabled:opacity-40"
+            disabled={running}
+            onClick={onRollback}
+          >
+            Restore previous
+          </button>
+        ) : null}
       </div>
     </li>
   );

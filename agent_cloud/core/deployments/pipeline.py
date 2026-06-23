@@ -29,6 +29,7 @@ DEPLOYMENT_STATES = frozenset(
         "active",
         "failed",
         "rolled_back",
+        "superseded",
         "archived",
     }
 )
@@ -71,6 +72,19 @@ def upload_artifact(
         version = (version_override or manifest.get("version") or "0.0.1").strip()
         if not version:
             version = "0.0.1"
+
+        # Same agent+version: refresh package bytes so deploy/run use the new ZIP.
+        existing = store.find_artifact_by_agent_version(project_id, agent_name, version)
+        if existing is not None:
+            existing_id = uuid.UUID(existing["artifact_id"])
+            _, checksum = save_artifact_bytes(project_id, existing_id, zip_bytes)
+            return store.update_artifact(
+                existing_id,
+                status="validated",
+                manifest=manifest,
+                validation_errors=None,
+                checksum_sha256=checksum,
+            ) or existing
 
         _, checksum = save_artifact_bytes(project_id, artifact_id, zip_bytes)
         rel_path = storage_path_relative(project_id, artifact_id)
@@ -141,19 +155,31 @@ def create_deployment_from_artifact(
             _transition_deployment(dep_id, status, f"state_{status}")
 
         store.supersede_active_deployments(project_id, art["agent_name"], dep_id)
-        store.update_deployment(
+        activated = store.update_deployment(
             dep_id,
             status="active",
             activated_at=datetime.now(timezone.utc),
         )
+        if activated is None:
+            raise RuntimeError("failed to activate deployment")
         store.append_deployment_event(
             dep_id, "activated", {"artifact_id": str(artifact_id)}
         )
-        return store.get_deployment(dep_id) or dep
+        return activated
     except Exception as e:
         _transition_deployment(
             dep_id, "failed", "deploy_failed", {"error": str(e)}
         )
+        if prev_id is not None:
+            restored = store.restore_previous_active(
+                project_id, art["agent_name"], prev_id
+            )
+            if restored is not None:
+                store.append_deployment_event(
+                    prev_id,
+                    "reactivated",
+                    {"reason": "deploy_failed", "failed_deployment_id": str(dep_id)},
+                )
         raise
 
 

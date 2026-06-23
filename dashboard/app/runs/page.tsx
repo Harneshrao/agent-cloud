@@ -8,6 +8,8 @@ import { trackProductEvent } from "@/lib/analytics";
 import { markOnboardingStep } from "@/lib/onboarding";
 import { ACTIVATION_COPY } from "@/lib/trust-copy";
 import { friendlyApiError } from "@/lib/project-messages";
+import { taskTraceHref } from "@/lib/trace-navigation";
+import { useActiveProject } from "@/context/active-project";
 import type { TaskListItem } from "@/types";
 import { EmptyState } from "@/components/product/empty-state";
 import { PlatformAlert } from "@/components/product/platform-alert";
@@ -23,6 +25,7 @@ function statusColor(status: string) {
 }
 
 export default function RunHistoryPage() {
+  const { projectId } = useActiveProject();
   const [tasks, setTasks] = useState<TaskListItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -31,7 +34,7 @@ export default function RunHistoryPage() {
     let cancelled = false;
     async function load() {
       try {
-        const taskRes = await fetchObservabilityTasks(50);
+        const taskRes = await fetchObservabilityTasks(50, projectId || undefined);
         if (!cancelled) {
           setTasks(taskRes.tasks ?? []);
         }
@@ -63,7 +66,7 @@ export default function RunHistoryPage() {
             onRetry={() => {
               setLoading(true);
               setError(null);
-              fetchObservabilityTasks(50)
+              fetchObservabilityTasks(50, projectId || undefined)
                 .then((taskRes) => setTasks(taskRes.tasks ?? []))
                 .catch((e) =>
                   setError(
@@ -93,7 +96,7 @@ export default function RunHistoryPage() {
                 {tasks.map((t) => (
                   <li key={t.task_id}>
                     <Link
-                      href={`/tasks/${t.task_id}`}
+                      href={taskTraceHref(t.task_id, projectId)}
                       onClick={() => {
                         markOnboardingStep("viewed_logs");
                         trackProductEvent("trace_viewed", { task_id: t.task_id });

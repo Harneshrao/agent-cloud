@@ -201,6 +201,18 @@ async def upload_artifact(
         except Exception:
             pass
         raise HTTPException(status_code=400, detail=upload_error(str(e))) from e
+    except Exception as e:
+        from sqlalchemy.exc import IntegrityError
+
+        if isinstance(e, IntegrityError) or "uq_agent_artifacts" in str(e):
+            raise HTTPException(
+                status_code=409,
+                detail=upload_error(
+                    "An artifact with this agent name and version already exists. "
+                    "Bump the version in agent.yaml, or deploy the existing artifact."
+                ),
+            ) from e
+        raise
 
 
 @router.get("/artifacts")

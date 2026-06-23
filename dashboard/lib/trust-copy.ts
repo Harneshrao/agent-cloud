@@ -5,9 +5,10 @@
 export function deploymentStatusLabel(status: string): string {
   const s = status.toLowerCase();
   const map: Record<string, string> = {
-    active: "Ready to run",
+    active: "Live · ready to run",
     failed: "Needs attention",
     deploying: "Starting up",
+    superseded: "Superseded by a newer version",
     rolled_back: "Previous version restored",
     archived: "Archived",
     uploaded: "Uploaded",
@@ -19,13 +20,77 @@ export function deploymentStatusLabel(status: string): string {
   return map[s] ?? status.replace(/_/g, " ");
 }
 
+/** Resolve display status when DB still has legacy rolled_back from promotion. */
+export function deploymentEffectiveStatus(
+  deployment: {
+    status: string;
+    deployment_id: string;
+    agent_name: string;
+    previous_deployment_id?: string | null;
+    activated_at?: string | null;
+    updated_at?: string;
+  },
+  allDeployments: Array<{
+    deployment_id: string;
+    agent_name: string;
+    status: string;
+    activated_at?: string | null;
+    updated_at?: string;
+  }>
+): string {
+  const raw = deployment.status.toLowerCase();
+  if (raw !== "rolled_back") return raw;
+
+  const ts = deployment.activated_at ?? deployment.updated_at ?? "";
+  const priorRestored = deployment.previous_deployment_id
+    ? allDeployments.some(
+        (d) =>
+          d.deployment_id === deployment.previous_deployment_id && d.status === "active"
+      )
+    : false;
+  if (priorRestored) return "rolled_back";
+
+  const supersededByChild = allDeployments.some(
+    (d) =>
+      d.deployment_id !== deployment.deployment_id &&
+      d.previous_deployment_id === deployment.deployment_id
+  );
+  if (supersededByChild) return "superseded";
+
+  const newerActive = allDeployments.some(
+    (d) =>
+      d.deployment_id !== deployment.deployment_id &&
+      d.agent_name === deployment.agent_name &&
+      d.status === "active" &&
+      (d.activated_at ?? d.updated_at ?? "") > ts
+  );
+  if (newerActive) return "superseded";
+
+  return "rolled_back";
+}
+
+export function deploymentDisplayLabel(
+  deployment: Parameters<typeof deploymentEffectiveStatus>[0],
+  allDeployments: Parameters<typeof deploymentEffectiveStatus>[1]
+): string {
+  return deploymentStatusLabel(deploymentEffectiveStatus(deployment, allDeployments));
+}
+
 export function deploymentStatusTone(
   status: string
 ): "ready" | "pending" | "attention" {
   const s = status.toLowerCase();
   if (s === "active") return "ready";
   if (s === "failed" || s === "rolled_back") return "attention";
+  if (s === "superseded") return "pending";
   return "pending";
+}
+
+export function deploymentDisplayTone(
+  deployment: Parameters<typeof deploymentEffectiveStatus>[0],
+  allDeployments: Parameters<typeof deploymentEffectiveStatus>[1]
+): ReturnType<typeof deploymentStatusTone> {
+  return deploymentStatusTone(deploymentEffectiveStatus(deployment, allDeployments));
 }
 
 export const SUCCESS_MESSAGES = {

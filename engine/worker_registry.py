@@ -24,6 +24,12 @@ def register_worker(worker_id: str, region: str | None = None, worker_type: str 
     worker_type: optional type (e.g. 'edge' for edge workers running lightweight agents).
     """
     db_register_worker(worker_id, region=region, worker_type=worker_type)
+    try:
+        from redis_queue_pkg.redis_client import write_worker_redis_heartbeat
+
+        write_worker_redis_heartbeat(worker_id, tasks_running=0, ttl_sec=60)
+    except Exception:
+        pass
 
 
 def set_capabilities(worker_id: str, capabilities: List[str]) -> None:
@@ -46,6 +52,12 @@ def heartbeat(worker_id: str, tasks_running: int = 0, region: str | None = None,
     region / worker_type: optional; updates stored values when provided.
     """
     db_heartbeat(worker_id, tasks_running, region=region, worker_type=worker_type)
+    try:
+        from redis_queue_pkg.redis_client import write_worker_redis_heartbeat
+
+        write_worker_redis_heartbeat(worker_id, tasks_running=tasks_running, ttl_sec=60)
+    except Exception:
+        pass
 
 
 def get_region(worker_id: str) -> str | None:

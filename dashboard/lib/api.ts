@@ -2,7 +2,7 @@ import { refreshAccessToken, clearTokens, getAccessToken } from "@/lib/auth";
 import { ApiRequestError } from "@/lib/api-errors";
 import { parseApiError } from "@/lib/errors";
 import { NO_PROJECT_MESSAGE, friendlyApiError } from "@/lib/project-messages";
-import { getActiveProjectId } from "@/lib/project";
+import { getActiveProjectId, resolveActiveProjectId } from "@/lib/project";
 
 /** Environment-driven API base URL (no proxy). */
 export const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -33,12 +33,12 @@ export function getApiBaseUrl(): string {
   return API_BASE;
 }
 
-function projectHeaders(): HeadersInit {
+function projectHeaders(projectId?: string): HeadersInit {
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
   };
-  const projectId = getActiveProjectId();
-  if (projectId) headers["X-Project-ID"] = projectId;
+  const pid = resolveActiveProjectId(projectId);
+  if (pid) headers["X-Project-ID"] = pid;
   if (typeof window !== "undefined") {
     const token = getAccessToken();
     if (token) headers["Authorization"] = `Bearer ${token}`;
@@ -162,6 +162,63 @@ function assertProjectSelected(): void {
   }
 }
 
+async function fetchObservabilityApi<T>(
+  path: string,
+  options?: RequestInit & { projectId?: string },
+  retried = false
+): Promise<T> {
+  const projectId = resolveActiveProjectId(options?.projectId);
+  if (!projectId) {
+    throw new ApiRequestError(NO_PROJECT_MESSAGE, 0);
+  }
+  try {
+    const headers: Record<string, string> = {
+      ...(projectHeaders(projectId) as Record<string, string>),
+      ...(options?.headers as Record<string, string>),
+    };
+    const { projectId: _omit, ...fetchOptions } = options ?? {};
+    const res = await fetchWithRetry(`${apiBase()}${path}`, {
+      ...fetchOptions,
+      headers,
+    });
+
+    if (res.status === 401 && !retried && typeof window !== "undefined") {
+      try {
+        const newToken = await refreshAccessToken();
+        const retryHeaders = { ...headers, Authorization: `Bearer ${newToken}` };
+        const retryRes = await fetchWithRetry(`${apiBase()}${path}`, {
+          ...fetchOptions,
+          headers: retryHeaders,
+        });
+        if (!retryRes.ok) {
+          const err = await retryRes.json().catch(() => ({ detail: retryRes.statusText }));
+          throwApiError(parseApiError(err, retryRes.statusText), retryRes.status);
+        }
+        return retryRes.json() as Promise<T>;
+      } catch (refreshErr) {
+        clearTokens();
+        window.location.href = "/login";
+        throw refreshErr instanceof Error ? refreshErr : new ApiRequestError("Session expired", 401);
+      }
+    }
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ detail: res.statusText }));
+      throwApiError(parseApiError(err, res.statusText), res.status);
+    }
+    return res.json() as Promise<T>;
+  } catch (e) {
+    if (e instanceof ApiRequestError) throw e;
+    if (e instanceof Error && (e.message === "Failed to fetch" || e.message === "Load failed")) {
+      throw new ApiRequestError(SERVER_UNAVAILABLE_MESSAGE, 0);
+    }
+    if (e instanceof Error) {
+      throw new ApiRequestError(friendlyApiError(e.message), 0);
+    }
+    throw e;
+  }
+}
+
 async function fetchProductApi<T>(path: string, options?: RequestInit, retried = false): Promise<T> {
   assertProjectSelected();
   try {
@@ -258,32 +315,40 @@ export async function fetchSystemQueue() {
   }
 }
 
-export async function fetchObservabilityHealth() {
-  return fetchApi<{
+export async function fetchObservabilityHealth(projectId?: string) {
+  return fetchObservabilityApi<{
     platform: Record<string, unknown>;
     project: Record<string, unknown>;
     queue: Record<string, unknown>;
-  }>("/observability/health");
+  }>("/observability/health", { projectId });
 }
 
-export async function fetchObservabilityTasks(limit = 50) {
-  return fetchApi<{ tasks: import("@/types").TaskListItem[] }>(
-    `/observability/tasks?limit=${limit}`
+export async function fetchObservabilityTasks(limit = 50, projectId?: string) {
+  return fetchObservabilityApi<{ tasks: import("@/types").TaskListItem[] }>(
+    `/observability/tasks?limit=${limit}`,
+    { projectId }
   );
 }
 
-export async function fetchTaskTrace(taskId: string) {
-  return fetchApi<import("@/types").TaskTrace>(`/observability/tasks/${taskId}/trace`);
-}
-
-export async function fetchObservabilityDlq(limit = 50) {
-  return fetchApi<{ dead_letters: import("@/types").DlqItem[]; count: number }>(
-    `/observability/dlq?limit=${limit}`
+export async function fetchTaskTrace(taskId: string, projectId?: string) {
+  return fetchObservabilityApi<import("@/types").TaskTrace>(
+    `/observability/tasks/${taskId}/trace`,
+    { projectId }
   );
 }
 
-export async function fetchObservabilityIncidents() {
-  return fetchApi<{ incidents: import("@/types").IncidentItem[] }>("/observability/incidents");
+export async function fetchObservabilityDlq(limit = 50, projectId?: string) {
+  return fetchObservabilityApi<{ dead_letters: import("@/types").DlqItem[]; count: number }>(
+    `/observability/dlq?limit=${limit}`,
+    { projectId }
+  );
+}
+
+export async function fetchObservabilityIncidents(projectId?: string) {
+  return fetchObservabilityApi<{ incidents: import("@/types").IncidentItem[] }>(
+    "/observability/incidents",
+    { projectId }
+  );
 }
 
 export interface BillingSummary {
@@ -527,8 +592,12 @@ export async function fetchInstallations() {
   return fetchProductApi<{ installations: import("@/types").Installation[] }>("/agents/installations");
 }
 
-export async function fetchDeployments() {
-  return fetchProductApi<{ deployments: import("@/types").DeploymentRecord[] }>("/deployments");
+export async function fetchDeployments(bustCache = false) {
+  const q = bustCache ? `?_=${Date.now()}` : "";
+  return fetchProductApi<{ deployments: import("@/types").DeploymentRecord[] }>(
+    `/deployments${q}`,
+    { cache: "no-store" }
+  );
 }
 
 export async function fetchDeploymentArtifacts() {

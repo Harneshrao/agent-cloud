@@ -149,8 +149,12 @@ export interface DeploymentRecord {
   agent_name: string;
   version: string;
   status: string;
+  /** True when status is active (API-normalized). */
+  active?: boolean;
+  previous_deployment_id?: string | null;
   configuration?: Record<string, unknown>;
   activated_at?: string | null;
+  created_at?: string;
   updated_at?: string;
 }
 
